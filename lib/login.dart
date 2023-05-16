@@ -1,0 +1,150 @@
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:restismob/screens/PreBillsList.dart';
+import 'package:restismob/screens/Settings.dart';
+import 'package:restismob/widgets/myFloatingButton.dart';
+
+
+import 'global.dart';
+import 'models/Waiter.dart';
+import 'global.dart' as global;
+
+class Login extends ConsumerWidget {
+  Login({super.key});
+
+  final controller = TextEditingController();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+
+    global.telNum = ref.watch(controllerProvider);
+    global.isLoading = ref.watch(loadProvider);
+    global.ref1 = ref;
+    global.context1 = context;
+    var appBar = AppBar(
+      backgroundColor: const Color(0xff6b738e),
+      centerTitle: true,
+      leading: InkWell(
+        onTap: () {
+          //global.navKey.currentState!.pop();
+          Navigator.of(context).pop();
+        },
+        child: const Icon(
+          Icons.arrow_back,
+          color: Colors.white60,
+        ),
+      ),
+      title: const Text(
+        "Введите код",
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: 22,
+          fontFamily: "Montserrat",
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      actions: [
+        IconButton(
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => Settings()));
+            },
+            icon: Icon(Icons.settings))
+      ],
+    );
+    return Scaffold(
+      appBar: appBar,
+      body: Container(
+        alignment: Alignment.center,
+        height: (MediaQuery.of(context).size.height - appBar.preferredSize.height) / 2,
+        child: Column(
+          children: <Widget>[
+            const Spacer(),
+            _buildTextFields(ref),
+            const Spacer(),
+            MyFloatingBunnon(
+              width: 245,
+              height: 48,
+              fontColor: 0xFFFFFFFF,
+              backColor: 0xff6b738e,
+              text: "Применить",
+              onPress: loadWaiter,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> loadWaiter() async {
+    Waiter employee;
+    try {
+      global.ref1?.read(loadProvider.notifier).state = true;
+      var dio = Dio(BaseOptions(connectTimeout: const Duration(seconds: 15)));
+      String request = 'http://${global.uri}/apim/GetUser?Phone=${global.telNum.trim()}';
+      // final response = await  dio.get('http://10.0.2.2:53535/apim/GetUser?Phone=79211234567');
+      final response = await dio.get(request);
+      debugPrint(response.data!.toString());
+      if (response.statusCode == 200) {
+        employee = Waiter.fromJson(response.data);
+        if (employee.user!.iderror == 0) {
+          waiter = employee;
+          global.ref1?.read(loadProvider.notifier).state = false;
+          //_toBillList(waiter.user!.idcode!);
+          Navigator.push(
+              context1!, MaterialPageRoute(builder: (context) => PreBillList(waiter.user!.idcode!)));
+        } else {
+          waiter = Waiter();
+          global.ref1?.read(loadProvider.notifier).state = false;
+          String msg = 'ОШИБКА !!!';
+          if (employee.user!.msgerror != null) {
+            msg = employee.user!.msgerror!;
+          }
+          final snackBar = SnackBar(
+            backgroundColor: const Color(0xffFF6392),
+            content: Text(msg),
+          );
+
+          // Find the ScaffoldMessenger in the widget tree
+          // and use it to show a SnackBar.
+          ScaffoldMessenger.of(context1!).showSnackBar(snackBar);
+        }
+      } else {
+        global.ref1?.read(loadProvider.notifier).state = false;
+        ScaffoldMessenger.of(context1!).showSnackBar(const SnackBar(content: Text('ОЙ! Всё сломалось')));
+        throw Exception("Cannot get user");
+      }
+      global.isLoading = false;
+    } catch (e) {
+      debugPrint(e.toString());
+      global.ref1?.read(loadProvider.notifier).state = false;
+      ScaffoldMessenger.of(context1!).showSnackBar(const SnackBar(
+        content: Text('Нет подключения'),
+        backgroundColor: Colors.redAccent,
+      ));
+    }
+  }
+
+  Widget _buildTextFields(WidgetRef ref) {
+    return Column(
+      children: <Widget>[
+        Container(
+          width: 250,
+          alignment: Alignment.center,
+          child: TextField(
+            controller: controller,
+            onChanged: (value) {
+              ref.read(controllerProvider.notifier).state = value;
+            },
+            style: const TextStyle(
+              fontSize: 40,
+              fontFamily: "Montserrat",
+              fontWeight: FontWeight.w800,
+              color: Colors.black87,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
