@@ -4,6 +4,8 @@ workflows:
     environment:
       flutter: beta
       xcode: 12.5
+    ios:
+    name: build, test & publish iOS version
     scripts:
       - name: Add provisioning profiles
         script: |
