@@ -3,7 +3,7 @@ workflows:
     instance_type: mac_mini_m1
     environment:
       flutter: beta
-      xcode: 12.2
+      xcode: 14.3
     scripts:
       - name: Add provisioning profiles
         script: |
