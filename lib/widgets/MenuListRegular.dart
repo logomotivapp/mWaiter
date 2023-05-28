@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:restismob/global.dart' as global;
 import '../models/Line.dart';
-import '../models/localTypes/qoAlert.dart';
+import '../models/localTypes/qo_Alert.dart';
 
 class MenuListRegular extends StatefulWidget {
   final int guestNumber;
@@ -42,15 +42,15 @@ class MenuListRegularState extends State<MenuListRegular> {
                             color: Color(0xff1A69A3),
                           )
                         : (widget.listOfLines[index].quantity! < 0
-                            ?  Icon(Icons.block, color: Colors.red)
+                            ?  const Icon(Icons.block, color: Colors.red)
                             : const Icon(Icons.add_circle_outline)),
                     onPressed: () {
                       if (widget.listOfLines[index].quantity! < 0){
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                             backgroundColor: Colors.redAccent,
                             content: Text(
                               'Бдюдо в стоп листе',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 18,
                               ),
                               textAlign: TextAlign.center,
@@ -58,12 +58,15 @@ class MenuListRegularState extends State<MenuListRegular> {
                       }
                       else {
                         showDialog(
-                            builder: (_) => qoAlert(ware: widget.listOfLines[index].dispname!),
+                            builder: (_) => QoAlert(ware: widget.listOfLines[index].dispname!, guest: widget.guestNumber,),
                             context: context)
                             .then((value) {
                           if (value != null) {
                             global.addNewLine(
-                                widget.listOfLines[index], widget.guestNumber, value[0], value[1], context);
+                                widget.listOfLines[index], value[2], value[0], value[1], context);
+                            if (value[2] > global.currentBill.root!.billHead!.head!.guestscount){
+                              global.currentBill.root!.billHead!.head!.guestscount = value[2];
+                            }
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                                 backgroundColor: Colors.black54,
                                 content: Text(

@@ -1,5 +1,5 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:list_ext/list_ext.dart';
@@ -149,4 +149,33 @@ bool ifLineInLines(int idWare, int guestNumber) {
   return currentBill.root!.billLines!.line!
       .where((element) => (element.idware == idWare) && (element.gnumber == guestNumber))
       .isNotEmpty;
+}
+
+Future<bool> saveCurrentBill() async {
+  GetBill? getBill;
+  bool result = false;
+  try {
+    var dio = Dio(BaseOptions(connectTimeout: const Duration(seconds: 15)));
+    String request = 'http://$uri/apim/Bill';
+    final response = await dio.post(request, data: currentBill.toJson());
+    debugPrint(response.data!.toString());
+    if (response.statusCode == 200) {
+      getBill = GetBill.fromJson(response.data);
+      if (getBill.root!.msgStatus != null) {
+        if (getBill.root!.msgStatus!.msg!.idStatus == 0) {
+          result = true;
+        } else {
+          result = false;
+        }
+      } else {
+        result = false;
+      }
+    } else {
+      result = false;
+    }
+  } catch (e) {
+    debugPrint(e.toString());
+    return false;
+  }
+  return result;
 }

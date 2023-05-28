@@ -8,15 +8,13 @@ import 'login.dart';
 import 'global.dart' as global;
 
 void main() {
-  runApp(ProviderScope(child: MyApp()));
+  runApp(const ProviderScope(child: MyApp()));
 }
 
-Future<void> _inPressed(BuildContext context) async {
-  //await global.navKey.currentState!.push(MaterialPageRoute(builder: (context) => const Login()));
-  await Navigator.push(context, MaterialPageRoute(builder: (context) => Login()));
-}
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(home: MyHome());
@@ -31,7 +29,7 @@ class MyHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Color(0xffedf0f1),
+        backgroundColor: const Color(0xffedf0f1),
         body: Column(
           children: <Widget>[
             const Spacer(
@@ -43,14 +41,15 @@ class MyHome extends StatelessWidget {
                 child: SvgPicture.asset(
                   'assets/images/splash.svg',
                   semanticsLabel: 'vector',
-                )),
+                  colorFilter:  const ColorFilter.mode(Color(0xff8d96b6), BlendMode.srcIn),
+                ),),
             const Spacer(),
             Container(
               height: 48,
               width: 213.9,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(30),
-                border: Border.all(color: Color(0xff8d96b6), width: 3),
+                border: Border.all(color: const Color(0xff8d96b6), width: 3),
               ),
               child: TextButton(
                 child: const Text("Войти",

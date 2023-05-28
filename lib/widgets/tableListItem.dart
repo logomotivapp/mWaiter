@@ -15,12 +15,13 @@ class TableItem extends StatefulWidget {
   final Bill bill;
   final int hColor;
   final List<int> kurss;
+  final String status;
 
   const TableItem({
     super.key,
     required this.bill,
     this.hColor = 0xffFFB5A5,
-    required this.kurss,
+    required this.kurss, required this.status,
   });
 
   @override
@@ -29,50 +30,66 @@ class TableItem extends StatefulWidget {
 
 class _PopupMenuItemState extends State<TableItem> {
   String? selectedMenu;
-  final numberFormat =  NumberFormat("##,##0.00");
+  final numberFormat = NumberFormat("##,##0.00");
+
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(10.0),
       child: Container(
         decoration:
             const BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(10)), color: Colors.white),
-        child: Column(
-          children: [
-            PopupMenuButton(
-              child: SizedBox(
-                height: 120,
-                child: Column(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(color: Color(widget.hColor)),
-                      child: Row(
-                        children: [
-                          Text(
-                            'Стол ${widget.bill.tablenumber}',
-                            style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 14,
-                              fontFamily: "Montserrat",
-                              fontWeight: FontWeight.w800,
+        child: SizedBox(
+          height: 184,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              PopupMenuButton(
+                child: SizedBox(
+                  height: 160,
+                  child: Column(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(color: Color(widget.hColor)),
+                        child: Row(
+                          children: [
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'Стол ${widget.bill.tablenumber}',
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 14,
+                                    fontFamily: "Montserrat",
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                                const Text(
+                                  'В работе',
+                                  style: TextStyle(
+                                    color: Colors.black45,
+                                    fontSize: 10,
+                                    fontFamily: "Montserrat",
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                          const Spacer(),
-                          Text(
-                            global.getTimeFromDateAndTime(widget.bill.billdate!),
-                            textAlign: TextAlign.right,
-                            style: const TextStyle(
-                              color: Color(0xb2000000),
-                              fontSize: 12,
+                            const Spacer(),
+                            Text(
+                              global.getTimeFromDateAndTime(widget.bill.billdate!),
+                              textAlign: TextAlign.right,
+                              style: const TextStyle(
+                                color: Color(0xb2000000),
+                                fontSize: 12,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(3.0),
-                      child: SizedBox(
-                        height: 60,
+                      SizedBox(
+                        height: 98,
                         child: Container(
                             alignment: Alignment.topLeft,
                             child: ListView.builder(
@@ -82,110 +99,119 @@ class _PopupMenuItemState extends State<TableItem> {
                                       line: widget.bill.line![index],
                                     ))),
                       ),
-                    ),
-                    const Divider(),
-                    Row(
-                      children: [
-                        SizedBox(
-                          width: 11.51,
-                          height: 14.39,
-                          child: SvgPicture.asset('assets/images/guest.svg', semanticsLabel: 'vector'),
-                        ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        Text(
-                          '${widget.bill.guestscount}',
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 14,
-                            fontFamily: "Montserrat",
-                            fontWeight: FontWeight.w800,
+                      const Divider(),
+                      Row(
+                        children: [
+                          SizedBox(
+                            width: 11.51,
+                            height: 14.39,
+                            child: SvgPicture.asset('assets/images/guest.svg', semanticsLabel: 'vector'),
                           ),
-                        ),
-                        const Spacer(),
-                        Text(
-                          NumberFormat.simpleCurrency(locale: 'ru-RU', decimalDigits: 2).format(widget.bill.amount),
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 14,
-                            fontFamily: "Montserrat",
-                            fontWeight: FontWeight.w800,
+                          const SizedBox(
+                            width: 5,
                           ),
-                        ),
-                       // const Text('₽'),
-                      ],
-                    )
-                  ],
+                          Text(
+                            '${widget.bill.guestscount}',
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 14,
+                              fontFamily: "Montserrat",
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          const Spacer(),
+                          Text(
+                            NumberFormat.simpleCurrency(locale: 'ru-RU', decimalDigits: 2)
+                                .format(widget.bill.amount),
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 14,
+                              fontFamily: "Montserrat",
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          // const Text('₽'),
+                        ],
+                      )
+                    ],
+                  ),
                 ),
-              ),
-              onSelected: (String item) {
-                selectedMenu = item;
-                if (selectedMenu!.contains('add')) {
-                  // _toBill(widget.bill.idcode!);
-                  Navigator.push(
-                      context, MaterialPageRoute(builder: (context) => CurrentBill(widget.bill.idcode!)));
-                }
-                if (selectedMenu!.contains('pickup')) {
-                  Future<bool> resu;
-                  if (widget.kurss.contains(2) || widget.kurss.contains(3)) {
-                    showDialog(context: context, builder: (_) => kursAlert(kurss: widget.kurss))
-                        .then((value) => {
-                              if ((value != null) && (value != 1))
-                                {
-                                  LoadingIndicatorDialog().show(context, text: 'Отправляю'),
-                                  resu = pickupCurrentBill(widget.bill.idcode!, value),
-                                  resu.then((value1) => {
-                                        LoadingIndicatorDialog().dismiss(),
-                                        if (!value1)
-                                          {
-                                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                                              content: Text(
-                                                'Ошибка передачи марок',
-                                              ),
-                                              backgroundColor: Color(0xffFF6392),
-                                            ))
-                                          }
-                                      }),
-                                }
-                            });
+                onSelected: (String item) {
+                  selectedMenu = item;
+                  if (selectedMenu!.contains('add')) {
+                    // _toBill(widget.bill.idcode!);
+                    Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => CurrentBill(widget.bill.idcode!),
+                                settings: const RouteSettings(name: "/currentbill")))
+                        .then((value) {
+                      widget.bill.guestscount = global.currentBill.root!.billHead!.head!.guestscount!;
+                      widget.bill.amount = global.currentBill.root!.billHead!.head!.amount!;
+                      setState(() {});
+                    });
                   }
-                }
-              },
-              itemBuilder: (BuildContext bc) {
-                return [
-                  PopupMenuItem(
-                    value: '/add',
-                    child: Row(
-                      children: <Widget>[
-                        const Text("Дополнить"),
-                        const Spacer(),
-                        SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: SvgPicture.asset('assets/images/add.svg', semanticsLabel: 'vector'),
-                        )
-                      ],
+                  if (selectedMenu!.contains('pickup')) {
+                    Future<bool> resu;
+                    if (widget.kurss.contains(2) || widget.kurss.contains(3)) {
+                      showDialog(context: context, builder: (_) => kursAlert(kurss: widget.kurss))
+                          .then((value) => {
+                                if ((value != null) && (value != 1))
+                                  {
+                                    LoadingIndicatorDialog().show(context, text: 'Отправляю'),
+                                    resu = pickupCurrentBill(widget.bill.idcode!, value),
+                                    resu.then((value1) => {
+                                          LoadingIndicatorDialog().dismiss(),
+                                          if (!value1)
+                                            {
+                                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                                content: Text(
+                                                  'Ошибка передачи марок',
+                                                ),
+                                                backgroundColor: Color(0xffFF6392),
+                                              ))
+                                            }
+                                        }),
+                                  }
+                              });
+                    }
+                  }
+                },
+                itemBuilder: (BuildContext bc) {
+                  return [
+                    PopupMenuItem(
+                      value: '/add',
+                      child: Row(
+                        children: <Widget>[
+                          const Text("Дополнить"),
+                          const Spacer(),
+                          SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: SvgPicture.asset('assets/images/add.svg', semanticsLabel: 'vector'),
+                          )
+                        ],
+                      ),
                     ),
-                  ),
-                  PopupMenuItem(
-                    value: '/pickup',
-                    child: Row(
-                      children: <Widget>[
-                        const Text("Пикап"),
-                        const Spacer(),
-                        SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: SvgPicture.asset('assets/images/sale.svg', semanticsLabel: 'vector'),
-                        )
-                      ],
+                    PopupMenuItem(
+                      value: '/pickup',
+                      child: Row(
+                        children: <Widget>[
+                          const Text("Пикап"),
+                          const Spacer(),
+                          SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: SvgPicture.asset('assets/images/sale.svg', semanticsLabel: 'vector'),
+                          )
+                        ],
+                      ),
                     ),
-                  ),
-                ];
-              },
-            ),
-          ],
+                  ];
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -214,6 +240,8 @@ class _PopupMenuItemState extends State<TableItem> {
     }
     return result;
   }
+
+
 }
 
 class LineImg extends StatelessWidget {
@@ -227,21 +255,31 @@ class LineImg extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Text(double.parse(line.quantity!).toStringAsFixed(2)),
-        SizedBox(
+        const SizedBox(
+          width: 5,
+        ),
+        Text(line.quantity == '0'?' ':'${double.parse(line.quantity!).toStringAsFixed(0)}\n',
+          style: const TextStyle(
+              color: Color(0xb2000000),
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              overflow: TextOverflow.ellipsis),
+        ),
+        const SizedBox(
           width: 5,
         ),
         SizedBox(
           width: 120,
+          height: 26.89,
           child: Text(
             line.dispname!,
             textAlign: TextAlign.start,
+            maxLines: 2,
             style: const TextStyle(
-              color: Color(0xb2000000),
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-              overflow: TextOverflow.ellipsis
-            ),
+                color: Color(0xb2000000),
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                overflow: TextOverflow.ellipsis),
           ),
         ),
       ],

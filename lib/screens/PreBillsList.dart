@@ -21,9 +21,32 @@ class PreBillList extends ConsumerStatefulWidget {
   ConsumerState<PreBillList> createState() => PreBillListHome();
 }
 
-class PreBillListHome extends ConsumerState<PreBillList> {
-  void refreshBillList() {
-    ref.invalidate(listProvider);
+class PreBillListHome extends ConsumerState<PreBillList> with WidgetsBindingObserver {
+  @override
+  initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.resumed:
+        setState(() {
+          ref.invalidate(listProvider);
+        });
+        break;
+      case AppLifecycleState.paused:
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.detached:
+        break;
+    }
   }
 
   @override
@@ -108,7 +131,8 @@ class PreBillListHome extends ConsumerState<PreBillList> {
             return DefaultTabController(
               length: 2,
               child: Scaffold(
-                appBar: appBar,
+                appBar: PreferredSize( preferredSize: const Size.fromHeight(80),
+                child: appBar,),
                 body: TabBarView(
                   children: [
                     PreBillListList(widget.waiterId),
@@ -119,9 +143,9 @@ class PreBillListHome extends ConsumerState<PreBillList> {
             );
           },
           error: (err, stack) => Text('Error: $err'),
-          loading: () =>  SafeArea(
+          loading: () => SafeArea(
             child: Scaffold(
-              backgroundColor: Color(0xffedf0f1),
+              backgroundColor: const Color(0xffedf0f1),
               body: Container(
                 alignment: Alignment.center,
                 child: Column(
@@ -131,14 +155,17 @@ class PreBillListHome extends ConsumerState<PreBillList> {
                     const MyProgressIndicator(
                       text: 'Загружаю МЕНЮ',
                     ),
-                    Text('${percent} %', style: const TextStyle(
-                        color: Color(0xff8d96b6),
-                        fontFamily: 'Montserrat',
-                        fontSize: 23.804527282714844,
-                        letterSpacing: 0,
-                        fontWeight: FontWeight.w800,
-                        height: 1.5 /*PERCENT not supported*/
-                    ),)
+                    Text(
+                      '$percent %',
+                      style: const TextStyle(
+                          color: Color(0xff8d96b6),
+                          fontFamily: 'Montserrat',
+                          fontSize: 23.804527282714844,
+                          letterSpacing: 0,
+                          fontWeight: FontWeight.w800,
+                          height: 1.5 /*PERCENT not supported*/
+                          ),
+                    )
                   ],
                 ),
               ),
@@ -234,7 +261,7 @@ class PreBillListListMy extends ConsumerWidget {
             }
           },
           error: (err, stack) => Text('Error: $err'),
-          loading: () => MyProgressIndicator(),
+          loading: () => const MyProgressIndicator(),
         ),
       ),
     );
@@ -251,10 +278,18 @@ Future<preBillList> loadPreBillList(num waiterId) async {
     pBillList = preBillList.fromJson(response.data);
     if (pBillList.preBills != null) {
       pBillList.preBills!.bill!.removeWhere((element) => element != null ? element.tablenumber! == 0 : true);
+      for (var element in pBillList.preBills!.bill!) {
+        if (element!.line!.length > 3){
+          element.line!.length = 4;
+          element.line![3].quantity = '0';
+          element.line![3].dispname = ' ... ';
+        }
+      }
     }
   } else {
     pBillList = null;
   }
+
   return pBillList!;
 }
 

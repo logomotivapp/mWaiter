@@ -4,6 +4,8 @@ import 'package:restismob/screens/ComplexToSelect.dart';
 import '../models/menu/MenuHead.dart';
 import 'package:restismob/global.dart' as global;
 
+import 'BillImageText.dart';
+
 class ComplexList extends StatefulWidget {
   final List<MenuHead> listComplexHead;
   final int guestNum;
@@ -14,7 +16,34 @@ class ComplexList extends StatefulWidget {
   State<ComplexList> createState() => ComplexListState();
 }
 
-class ComplexListState extends State<ComplexList> {
+class ComplexListState extends State<ComplexList> with WidgetsBindingObserver{
+  initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.paused:
+        var result = global.saveCurrentBill();
+        result.then((value) => {
+          Navigator.popUntil(context, (route) => route.settings.name == "/prebills")
+        });
+        break;
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.resumed:
+      case AppLifecycleState.detached:
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var appBar = AppBar(
@@ -30,19 +59,28 @@ class ComplexListState extends State<ComplexList> {
           color: Colors.white60,
         ),
       ),
-      title: SizedBox(
+      title: const SizedBox(
         height: 48,
         child: Text(
           'КОМПЛЕКСЫ',
           textAlign: TextAlign.center,
           maxLines: 2,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 22,
             fontFamily: "Montserrat",
             fontWeight: FontWeight.bold,
           ),
         ),
       ),
+      actions: [
+        IconButton(
+          color: Colors.white,
+          icon: const Icon(Icons.checklist_rtl_sharp),
+          onPressed: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => const BillImageText()));
+          },
+        ),
+      ],
     );
 
     return SafeArea(
@@ -77,7 +115,7 @@ class ComplexListState extends State<ComplexList> {
                 },
                 icon: global.ifLineInLines(widget.listComplexHead[index].idcode!, widget.guestNum)
                     ? const Icon(Icons.check_circle, color: Color(0xff1A69A3))
-                    : Icon(Icons.add_circle_outline),
+                    : const Icon(Icons.add_circle_outline),
               ),
             ),
           ),

@@ -258,6 +258,7 @@ class Bill {
   String? get opendate => _opendate;
 
   num? get amount => _amount;
+  set amount(num? value) => _amount = value;
 
   num? get idwaiter => _idwaiter;
 
@@ -266,6 +267,8 @@ class Bill {
   num? get tablenumber => _tablenumber;
 
   num? get guestscount => _guestscount;
+
+  set guestscount(num? value) => _guestscount = value;
 
   String? get note => _note;
 
@@ -381,9 +384,9 @@ class PreBillLine {
   String? get idline => _idline;
 
   String? get quantity => _quantity;
-
+  set quantity(String? value) => _quantity = value;
   String? get dispname => _dispname;
-
+  set dispname(String? value) => _dispname = value;
   String? get price => _price;
 
   String? get norder => _norder;

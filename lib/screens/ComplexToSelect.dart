@@ -172,6 +172,7 @@ class ComplexToSelectState extends State<ComplexToSelect> {
                     TextButton(
                       onPressed: () {
                         global.currentBill.root!.billLines!.line!.addAll(selectedLines);
+                        global.currentBill.root!.billHead!.head!.amount = global.currentBill.billSumm();
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                             backgroundColor: Colors.black54,
                             content: Text(

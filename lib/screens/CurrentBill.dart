@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:focus_detector/focus_detector.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 
@@ -10,6 +9,7 @@ import 'package:restismob/models/localTypes/LoadingIndicatorDialog.dart';
 import 'package:restismob/screens/guestScreen.dart';
 
 import '../widgets/myProgressIndicator.dart';
+import 'BillImageText.dart';
 
 final numTableProvider = StateProvider<num>((ref) {
   return 0;
@@ -31,14 +31,48 @@ final numGuestsProvider = StateProvider<int>((ref) {
   return 0;
 });
 
-class CurrentBill extends ConsumerWidget {
-  const CurrentBill(this.billNum, {super.key});
+class CurrentBill extends ConsumerStatefulWidget {
+  const CurrentBill(
+    this.billNum, {
+    Key? key,
+  }) : super(key: key);
 
   final num billNum;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    numnumbill = billNum;
+  ConsumerState<ConsumerStatefulWidget> createState() => _CurrentBillState();
+}
+
+class _CurrentBillState extends ConsumerState<CurrentBill> with WidgetsBindingObserver {
+  @override
+  initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.paused:
+        var result = global.saveCurrentBill();
+        result.then((value) => {Navigator.popUntil(context, (route) => route.settings.name == "/prebills")});
+        break;
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.resumed:
+      case AppLifecycleState.detached:
+        break;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    numnumbill = widget.billNum;
     global.ref1 = ref;
     global.context1 = context;
     var tn = ref.watch(numTableProvider);
@@ -46,6 +80,7 @@ class CurrentBill extends ConsumerWidget {
     var currentBill = ref.watch(billProvider);
     var amount = ref.watch(amountProvider);
     List<Map<String, dynamic>> items = [];
+    int commonGuest = 1;
 
     var appBar = AppBar(
       backgroundColor: const Color(0xff6C0A39),
@@ -70,6 +105,7 @@ class CurrentBill extends ConsumerWidget {
         ),
       ),
     );
+
     return WillPopScope(
       onWillPop: () async {
         if (global.currentBill.root!.billLines!.line != null) {
@@ -77,7 +113,7 @@ class CurrentBill extends ConsumerWidget {
         }
         global.currentBill.root!.billHead!.head!.amount = global.currentBill.billSumm();
         LoadingIndicatorDialog().show(context);
-        var result = saveCurrentBill(global.currentBill);
+        var result = global.saveCurrentBill();
         result.then((value) => {
               LoadingIndicatorDialog().dismiss(),
               if (!value)
@@ -106,15 +142,19 @@ class CurrentBill extends ConsumerWidget {
                   if (currentBill.root!.billCondiments!.condiment == null) {
                     global.currentBill.root!.billCondiments!.condiment = [];
                   }
-                  for (int i = 0;
-                      i < gNs; //currentBill.root!.billHead!.head!.guestscount!;
+                  if (guestHaveLine(0)) {
+                    commonGuest = 0;
+                    items.add({'i': 0, 'gN': 'Общий'});
+                  }
+                  for (int i = 1;
+                      i <= gNs; //currentBill.root!.billHead!.head!.guestscount!;
                       i++) {
-                    items.add({'i': i, 'gN': 'Гость №${i + 1}'});
+                    items.add({'i': i, 'gN': 'Гость №$i'});
                   }
                   return Column(
                     children: [
                       Flexible(
-                        flex: 3,
+                        flex: 4,
                         child: ListTileTheme(
                           contentPadding: const EdgeInsets.all(5),
                           iconColor: Colors.black54,
@@ -123,7 +163,7 @@ class CurrentBill extends ConsumerWidget {
                           style: ListTileStyle.list,
                           dense: true,
                           child: ListView.builder(
-                            itemCount: gNs, //items.length,
+                            itemCount: items.length,
                             itemBuilder: (_, index) => Card(
                               margin: const EdgeInsets.all(5),
                               child: ListTile(
@@ -137,7 +177,7 @@ class CurrentBill extends ConsumerWidget {
                                   trailing: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      !guestHaveLine(index + 1)
+                                      !guestHaveLine(index + commonGuest)
                                           ? IconButton(
                                               onPressed: () {
                                                 for (var element
@@ -156,14 +196,18 @@ class CurrentBill extends ConsumerWidget {
                                       IconButton(
                                         icon: const Icon(Icons.arrow_forward_ios),
                                         onPressed: () {
-                                          // _toGuest(index + 1);
                                           Navigator.push(
                                                   context,
                                                   MaterialPageRoute(
-                                                      builder: (context) => GuestScreen(index + 1)))
+                                                      builder: (context) =>
+                                                          GuestScreen(gN: index + commonGuest),
+                                                      settings: const RouteSettings(name: "/guestscreen")))
                                               .then((value) => {
                                                     ref.read(amountProvider.notifier).state =
                                                         global.currentBill.billSumm(),
+                                                    ref.read(numGuestsProvider.notifier).state =
+                                                        global.currentBill.root!.billHead!.head!.guestscount!,
+
                                                   });
                                         },
                                       ),
@@ -178,7 +222,7 @@ class CurrentBill extends ConsumerWidget {
                           onPressed: () {
                             gNs++;
                             currentBill.root!.billHead!.head!.guestscount = gNs;
-                            global.ref1!.read(numGuestsProvider.notifier).state =
+                            ref.read(numGuestsProvider.notifier).state =
                                 currentBill.root!.billHead!.head!.guestscount!;
                           },
                           style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
@@ -227,7 +271,7 @@ class CurrentBill extends ConsumerWidget {
                                 global.currentBill.root!.billHead!.head!.amount =
                                     global.currentBill.billSumm();
                                 LoadingIndicatorDialog().show(context, text: 'Отправляю и обновляю');
-                                var result = saveCurrentBill(global.currentBill);
+                                var result = global.saveCurrentBill();
                                 result.then((value) => {
                                       if (!value)
                                         {
@@ -278,8 +322,8 @@ class CurrentBill extends ConsumerWidget {
                                   //const Text('₽'),
                                 ],
                               ),
-                              Row(
-                                children: const [
+                              const Row(
+                                children: [
                                   Text(
                                     'Без учета скидок',
                                     style: TextStyle(
@@ -291,31 +335,34 @@ class CurrentBill extends ConsumerWidget {
                                   ),
                                 ],
                               ),
-                              // Container(
-                              //   alignment: Alignment.bottomRight,
-                              //   child: Column(
-                              //     children: [
-                              //       CircleAvatar(
-                              //         radius: 25,
-                              //         backgroundColor: Colors.black26,
-                              //         child: IconButton(
-                              //           color: Colors.white,
-                              //           icon: const Icon(Icons.checklist),
-                              //           onPressed: () {},
-                              //         ),
-                              //       ),
-                              //       const Text(
-                              //         'Пречек',
-                              //         style: TextStyle(
-                              //           color: Colors.black26,
-                              //           fontSize: 12,
-                              //           fontFamily: "Montserrat",
-                              //           fontWeight: FontWeight.w500,
-                              //         ),
-                              //       )
-                              //     ],
-                              //   ),
-                              // )
+                              Container(
+                                alignment: Alignment.bottomRight,
+                                child: Column(
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 25,
+                                      backgroundColor: Colors.black26,
+                                      child: IconButton(
+                                        color: Colors.white,
+                                        icon: const Icon(Icons.checklist_rtl_sharp),
+                                        onPressed: () {
+                                          Navigator.push(context,
+                                              MaterialPageRoute(builder: (context) => const BillImageText()));
+                                        },
+                                      ),
+                                    ),
+                                    const Text(
+                                      'Просмотр счета',
+                                      style: TextStyle(
+                                        color: Colors.black26,
+                                        fontSize: 12,
+                                        fontFamily: "Montserrat",
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              )
                             ],
                           ),
                         ),
@@ -337,12 +384,6 @@ class CurrentBill extends ConsumerWidget {
     );
   }
 
-  void qTOq() {
-    for (var element in global.currentBill.root!.billLines!.line!) {
-      element.markquantity = element.quantity!;
-    }
-  }
-
   bool guestHaveLine(int gNumber) {
     bool result = false;
     for (var element in global.currentBill.root!.billLines!.line!) {
@@ -352,35 +393,6 @@ class CurrentBill extends ConsumerWidget {
     }
     return result;
   }
-}
-
-Future<bool> saveCurrentBill(GetBill bill) async {
-  GetBill? getBill;
-  bool result = false;
-  try {
-    var dio = Dio(BaseOptions(connectTimeout: const Duration(seconds: 15)));
-    String request = 'http://${global.uri}/apim/Bill';
-    final response = await dio.post(request, data: bill.toJson());
-    debugPrint(response.data!.toString());
-    if (response.statusCode == 200) {
-      getBill = GetBill.fromJson(response.data);
-      if (getBill.root!.msgStatus != null) {
-        if (getBill.root!.msgStatus!.msg!.idStatus == 0) {
-          result = true;
-        } else {
-          result = false;
-        }
-      } else {
-        result = false;
-      }
-    } else {
-      result = false;
-    }
-  } catch (e) {
-    debugPrint(e.toString());
-    return false;
-  }
-  return result;
 }
 
 Future<GetBill> loadCurrentBill(num billId) async {
@@ -424,8 +436,9 @@ num numnumbill = 0;
 AutoDisposeFutureProvider<GetBill> billProvider = FutureProvider.autoDispose<GetBill>((ref) async {
   GetBill getBill = await loadCurrentBill(numnumbill);
   if (getBill.root != null) {
-    if (getBill.root!.billHead!.head != null){
-    global.ref1!.read(numGuestsProvider.notifier).state = getBill.root!.billHead!.head!.guestscount!;
-  }}
+    if (getBill.root!.billHead!.head != null) {
+      global.ref1!.read(numGuestsProvider.notifier).state = getBill.root!.billHead!.head!.guestscount!;
+    }
+  }
   return getBill;
 });

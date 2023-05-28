@@ -10,6 +10,7 @@ import '../models/menu/Cash.dart';
 import '../models/menu/MenuHead.dart';
 import '../models/menu/MenuLine.dart';
 import '../widgets/MenuListRegular.dart';
+import 'BillImageText.dart';
 
 class MenuWithTab extends StatefulWidget {
   final int guestNum;
@@ -20,7 +21,7 @@ class MenuWithTab extends StatefulWidget {
   State<MenuWithTab> createState() => MenuWithTabHome();
 }
 
-class MenuWithTabHome extends State<MenuWithTab> with TickerProviderStateMixin {
+class MenuWithTabHome extends State<MenuWithTab> with TickerProviderStateMixin , WidgetsBindingObserver {
   String title = 'Меню';
   List<MenuHead> listMenuHead = [];
   List<MenuHead> listComplexHead = [];
@@ -141,15 +142,16 @@ class MenuWithTabHome extends State<MenuWithTab> with TickerProviderStateMixin {
   }
 
   late TabController _controller;
-  int _selectedIndex = 0;
+  //int _selectedIndex = 0;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _controller = TabController(length: 5, vsync: this);
     _controller.addListener(() {
       setState(() {
-        _selectedIndex = _controller.index;
+//        _selectedIndex = _controller.index;
       });
     });
     listMenuHead.clear();
@@ -185,7 +187,24 @@ class MenuWithTabHome extends State<MenuWithTab> with TickerProviderStateMixin {
   @override
   void dispose() {
     _controller.dispose();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.paused:
+        var result = global.saveCurrentBill();
+        result.then((value) => {
+          Navigator.popUntil(context, (route) => route.settings.name == "/prebills")
+        });
+        break;
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.resumed:
+      case AppLifecycleState.detached:
+        break;
+    }
   }
 
   @override
@@ -244,6 +263,15 @@ class MenuWithTabHome extends State<MenuWithTab> with TickerProviderStateMixin {
         Tab(child: Icon(Icons.find_in_page_outlined) //Text('Поиск', textAlign: TextAlign.center,),
             )
       ]),
+      actions: [
+        IconButton(
+          color: Colors.white,
+          icon: const Icon(Icons.checklist_rtl_sharp),
+          onPressed: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => const BillImageText()));
+          },
+        ),
+      ],
     );
 
     return DefaultTabController(

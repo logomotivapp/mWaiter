@@ -10,24 +10,11 @@ import 'package:restismob/models/localTypes/TextInputAlert.dart';
 import '../models/BillCondiment.dart';
 import '../models/Line.dart';
 import '../models/localTypes/condimAlert.dart';
-import '../models/localTypes/qoAlert.dart';
+import '../models/localTypes/qo_Alert.dart';
 import '../models/menu/Condiment.dart';
 import '../models/menu/MenuLine.dart';
+import 'BillImageText.dart';
 import 'MenuWithTab.dart';
-
-class GuestScreen extends StatelessWidget {
-  final int gN;
-
-  const GuestScreen(this.gN, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    guestNumber = gN;
-    return const SafeArea(
-      child: GuestMeal(),
-    );
-  }
-}
 
 Future<List<Line>> editedLines(int gnumber) async {
   List<Line> listOfLines = [];
@@ -100,6 +87,15 @@ class GuestMeal extends ConsumerWidget {
           fontWeight: FontWeight.bold,
         ),
       ),
+      actions: [
+        IconButton(
+          color: Colors.white,
+          icon: const Icon(Icons.checklist_rtl_sharp),
+          onPressed: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => const BillImageText()));
+          },
+        ),
+      ],
     );
     return FocusDetector(
       onVisibilityGained: () {
@@ -210,7 +206,7 @@ class GuestMeal extends ConsumerWidget {
                                 onSelected: (String item) {
                                   if (item.contains('del')) {
                                     if (markNotSended(listOfLines[index])) {
-                                      listOfLines[index].quantity = 0;
+                                      listOfLines[index].quantity = listOfLines[index].markquantity;
                                       ref.invalidate(listGuestProvider);
                                     }
                                   }
@@ -271,12 +267,12 @@ class GuestMeal extends ConsumerWidget {
                                 },
                                 itemBuilder: (BuildContext bc) {
                                   return [
-                                    PopupMenuItem(
+                                    const PopupMenuItem(
                                       value: '/del',
                                       child: Column(
                                         children: [
                                           Row(
-                                            children: const <Widget>[
+                                            children: <Widget>[
                                               Text("Удалить"),
                                               Spacer(),
                                               Icon(
@@ -285,7 +281,7 @@ class GuestMeal extends ConsumerWidget {
                                               ),
                                             ],
                                           ),
-                                          const SizedBox(
+                                          SizedBox(
                                             height: 24,
                                           ),
                                         ],
@@ -345,9 +341,9 @@ class GuestMeal extends ConsumerWidget {
                   color: const Color(0xff6D1064),
                 ),
                 child: TextButton(
-                  child: Row(
+                  child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
+                    children: [
                       Icon(
                         Icons.add_circle_outline,
                         color: Colors.white,
@@ -447,13 +443,16 @@ class GuestMeal extends ConsumerWidget {
                                                     }
                                                     else {
                                                     showDialog(
-                                                            builder: (_) => qoAlert(
+                                                            builder: (_) => QoAlert( guest: guestNumber,
                                                                 ware: poplistOfLines[index].dispname!),
                                                             context: context)
                                                         .then((value) {
                                                       if (value != null) {
-                                                        global.addNewLine(poplistOfLines[index], guestNumber,
+                                                        global.addNewLine(poplistOfLines[index], value[2],
                                                             value[0], value[1], context);
+                                                        if (value[2] > global.currentBill.root!.billHead!.head!.guestscount){
+                                                          global.currentBill.root!.billHead!.head!.guestscount = value[2];
+                                                        }
                                                         ref.invalidate(listGuestProvider);
                                                         Navigator.of(context).pop();
                                                         if (listScrollController.hasClients) {
@@ -498,4 +497,52 @@ class GuestMeal extends ConsumerWidget {
     }
     return result;
   } 
+}
+
+class GuestScreen extends StatefulWidget{
+  final int gN;
+
+  const GuestScreen({super.key, required this.gN});
+  @override
+  State<GuestScreen> createState() => _GuestScreenState();
+}
+
+class _GuestScreenState extends State<GuestScreen> with WidgetsBindingObserver{
+
+  @override
+  initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.paused:
+        var result = global.saveCurrentBill();
+        result.then((value) => {
+          Navigator.popUntil(context, (route) => route.settings.name == "/prebills")
+        });
+        break;
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.resumed:
+      case AppLifecycleState.detached:
+        break;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    guestNumber = widget.gN;
+    return const SafeArea(
+      child: GuestMeal(),
+    );
+  }
+
 }
