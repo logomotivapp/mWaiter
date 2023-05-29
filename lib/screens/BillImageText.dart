@@ -51,7 +51,7 @@ class BillImageText extends StatelessWidget {
       }
       listsOfWidgets.add(
         Text(
-          commonG == 0 ? 'Общий ' : 'Гость $i',
+          i == 0 ? 'Общий ' : 'Гость $i',
           style: const TextStyle(
               fontSize: 18, fontFamily: "Montserrat", fontWeight: FontWeight.w800, color: Colors.blueAccent),
         ),
@@ -65,17 +65,25 @@ class BillImageText extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                element.dispname!,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontFamily: "Montserrat",
-                  fontWeight: FontWeight.w800,
+              Flexible(
+                flex: 7,
+                child: Text(
+                  element.dispname!,
+                  maxLines: 2,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontFamily: "Montserrat",
+                    fontWeight: FontWeight.w800,
+                      overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ),
-              Text(
-                'порц. ${element.quantity}',
-                style: const TextStyle(fontSize: 16, fontFamily: "Montserrat", fontWeight: FontWeight.w800),
+              Flexible(
+                flex: 3,
+                child: Text(
+                  'порц. ${element.quantity}',
+                  style: const TextStyle(fontSize: 16, fontFamily: "Montserrat", fontWeight: FontWeight.w800),
+                ),
               )
             ],
           ),
@@ -96,6 +104,7 @@ class BillImageText extends StatelessWidget {
                           fontSize: 16,
                           fontFamily: "Montserrat",
                           fontWeight: FontWeight.w800,
+                          overflow: TextOverflow.ellipsis,
                           color: Colors.grey)),
                 ],
               ),
@@ -116,6 +125,7 @@ class BillImageText extends StatelessWidget {
                         fontStyle: FontStyle.italic,
                         color: Colors.black45,
                         fontSize: 16,
+                        overflow: TextOverflow.ellipsis,
                         fontWeight: FontWeight.w400)),
               ]),
             );
