@@ -5,8 +5,6 @@ workflows:
       flutter: beta
       xcode: 14.3
     scripts:
-      - name: Increment build number
-        script: agvtool new-version -all $BUILD_NUMBER
       - name: Set up code signing settings on Xcode project
         script: xcode-project use-profiles
       - name: Build ipa for distribution
