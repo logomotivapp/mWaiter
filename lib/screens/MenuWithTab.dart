@@ -235,7 +235,8 @@ class MenuWithTabHome extends State<MenuWithTab> with TickerProviderStateMixin ,
           ),
         ),
       ),
-      bottom: TabBar(indicatorColor: Colors.white, controller: _controller, tabs: const [
+      bottom: TabBar(indicatorWeight: 6.0, indicatorColor: Colors.white, controller: _controller,
+          tabs: const [
         Tab(
           child: Text(
             'Меню',

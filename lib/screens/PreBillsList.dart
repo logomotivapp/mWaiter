@@ -5,6 +5,8 @@ import 'package:restismob/screens/BillListPage.dart';
 import 'package:focus_detector/focus_detector.dart';
 
 import '../global.dart';
+import '../models/Featured/Fea.dart';
+import '../models/Featured/FeaturedRoot.dart';
 import '../models/PreBills.dart';
 import '../models/Bill.dart';
 import '../global.dart' as global;
@@ -53,6 +55,7 @@ class PreBillListHome extends ConsumerState<PreBillList> with WidgetsBindingObse
   Widget build(BuildContext context) {
     int percent = ref.watch(global.percentProvider);
     var menuStructure = ref.watch(menuProvider);
+    ref.watch(feaProvider);
     global.srvIdLine = 0;
     var appBar = AppBar(
       backgroundColor: const Color(0xff68a3ab),
@@ -85,7 +88,8 @@ class PreBillListHome extends ConsumerState<PreBillList> with WidgetsBindingObse
             },
             icon: const Icon(Icons.refresh))
       ],
-      bottom: const TabBar(tabs: [
+      bottom: const TabBar(indicatorWeight: 6.0, indicatorColor: Colors.white,
+          tabs: [
         Tab(
           text: 'Все',
         ),
@@ -97,6 +101,7 @@ class PreBillListHome extends ConsumerState<PreBillList> with WidgetsBindingObse
     return FocusDetector(
       onVisibilityGained: () {
         ref.invalidate(listProvider);
+        ref.invalidate(feaProvider);
       },
       child: WillPopScope(
         onWillPop: () async {
@@ -131,8 +136,10 @@ class PreBillListHome extends ConsumerState<PreBillList> with WidgetsBindingObse
             return DefaultTabController(
               length: 2,
               child: Scaffold(
-                appBar: PreferredSize( preferredSize: const Size.fromHeight(80),
-                child: appBar,),
+                appBar: PreferredSize(
+                  preferredSize: const Size.fromHeight(80),
+                  child: appBar,
+                ),
                 body: TabBarView(
                   children: [
                     PreBillListList(widget.waiterId),
@@ -279,7 +286,7 @@ Future<preBillList> loadPreBillList(num waiterId) async {
     if (pBillList.preBills != null) {
       pBillList.preBills!.bill!.removeWhere((element) => element != null ? element.tablenumber! == 0 : true);
       for (var element in pBillList.preBills!.bill!) {
-        if (element!.line!.length > 3){
+        if (element!.line!.length > 3) {
           element.line!.length = 4;
           element.line![3].quantity = '0';
           element.line![3].dispname = ' ... ';
@@ -316,3 +323,26 @@ Future<MenuStructure> loadMenu() async {
     return MenuStructure();
   }
 }
+
+Future<Fea> loadFeature() async {
+  var dio = Dio(BaseOptions(connectTimeout: const Duration(seconds: 15)));
+  String request = 'http://${global.uri}/apim/FeaturedItems?Id_Waiter=${global.waiter.user!.idcode}';
+  final response = await dio.get(request, onReceiveProgress: (count, total) {
+    debugPrint('count $count total $total percent ${count / total * 100}');
+    ref1!.read(global.percentProvider.notifier).state = (count / total * 100).round();
+  });
+  if (response.statusCode == 200) {
+    global.fea = Fea.fromJson(response.data);
+    global.fea.featuredRoot ??= FeaturedRoot();
+    global.fea.featuredRoot!.featuredItems!.item ??= [];
+    return global.fea;
+  } else {
+    return Fea();
+  }
+}
+
+AutoDisposeFutureProvider<Fea> feaProvider =
+FutureProvider.autoDispose<Fea>((ref) async {
+  return await loadFeature();
+});
+

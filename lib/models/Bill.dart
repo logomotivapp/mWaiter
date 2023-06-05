@@ -64,6 +64,8 @@ class Bill {
     num? idcashier,
     num? iscurs2,
     num? iscurs3,
+    num? iStatusBill,
+    String? StatusBill,
 
     List<PreBillLine>? line,
   }) {
@@ -96,6 +98,8 @@ class Bill {
     _idcashier = idcashier;
     _iscurs2 = iscurs2;
     _iscurs3 = iscurs3;
+    _iStatusBill = iStatusBill;
+    _StatusBill = StatusBill;
     _line = line;
   }
 
@@ -129,6 +133,8 @@ class Bill {
     _idcashier = json['ID_CASHIER'];
     _iscurs2 = json['IS_CURS2'];
     _iscurs3 = json['IS_CURS3'];
+    _iStatusBill = json['iStatusBill'];
+    _StatusBill = json['StatusBill'];
     if (json['Line'] != null) {
       _line = [];
       json['Line'].forEach((v) {
@@ -168,6 +174,8 @@ class Bill {
   num? _idcashier;
   num? _iscurs2;
   num? _iscurs3;
+  num? _iStatusBill;
+  String? _StatusBill;
   List<PreBillLine>? _line;
 
   Bill copyWith({
@@ -200,6 +208,9 @@ class Bill {
     num? idcashier,
     num? iscurs2,
     num? iscurs3,
+    num? iStatusBill,
+    String? StatusBill,
+
     List<PreBillLine>? line,
   }) =>
       Bill(
@@ -232,6 +243,8 @@ class Bill {
         idcashier: idcashier ?? _idcashier,
         iscurs2: iscurs2 ?? _iscurs2,
         iscurs3: iscurs3 ?? _iscurs3,
+        iStatusBill:  iStatusBill ?? _iStatusBill,
+        StatusBill:  StatusBill ?? _StatusBill,
         line: line ?? _line,
       );
 
@@ -293,6 +306,8 @@ class Bill {
   num? get idcashier => _idcashier;
   num? get iscurs2 => _iscurs2;
   num? get iscurs3 => _iscurs3;
+  num? get iStatusBill => _iStatusBill;
+  String? get StatusBill => _StatusBill;
 
   List<PreBillLine>? get line => _line;
 
@@ -327,6 +342,8 @@ class Bill {
     map['ID_CASHIER'] = _idcashier;
     map['IS_CURS2'] = _iscurs2;
     map['IS_CURS3'] = _iscurs3;
+    map['iStatusBill'] = _iStatusBill;
+    map['StatusBill'] = _StatusBill;
     if (_line != null) {
       map['Line'] = _line?.map((v) => v.toJson()).toList();
     }

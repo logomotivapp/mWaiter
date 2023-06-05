@@ -37,7 +37,8 @@ class TablesList extends HookWidget {
           fontWeight: FontWeight.bold,
         ),
       ),
-      bottom: const TabBar(tabs: [
+      bottom: const TabBar(indicatorWeight: 6.0, indicatorColor: Colors.white,
+          tabs: [
         Tab(
           text: 'Все',
         ),

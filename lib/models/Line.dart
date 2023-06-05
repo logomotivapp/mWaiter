@@ -27,6 +27,7 @@ class Line {
       this.marking,
       this.idchoice,
       this.idcomplexline,
+      this.iscomplited,
   });
 
   Line.fromJson(dynamic json) {
@@ -54,6 +55,7 @@ class Line {
     unitname = json['UNIT_NAME'];
     idshop = json['ID_SHOP'];
     marking = json['MARKING'];
+    iscomplited = json['IS_COMPLETED'];
   }
   int? idbill;
   int? idware;
@@ -82,6 +84,7 @@ class Line {
   String? marking;
   int? idchoice;
   int? idcomplexline;
+  int? iscomplited;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -109,6 +112,7 @@ class Line {
     map['UNIT_NAME'] = unitname;
     map['ID_SHOP'] = idshop;
     map['MARKING'] = marking;
+    map['IS_COMPLETED'] = iscomplited;
     return map;
   }
 

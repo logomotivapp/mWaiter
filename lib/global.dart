@@ -14,6 +14,8 @@ import 'models/localTypes/condimAlert.dart';
 import 'models/menu/MenuHead.dart';
 import 'models/menu/MenuStructure.dart';
 import 'models/menu/Ware.dart';
+import 'models/Featured/Fea.dart';
+import 'models/Featured/Item.dart';
 
 MenuStructure menuStructure = MenuStructure();
 Waiter waiter = Waiter();
@@ -25,6 +27,7 @@ WidgetRef? ref1;
 bool isLoading = false;
 bool itemSelected = false;
 int srvIdLine = 0;
+Fea fea = Fea();
 
 //final navKey = GlobalKey<NavigatorState>();
 final controllerProvider = StateProvider<String>((ref) {
@@ -47,6 +50,48 @@ String getTimeFromDateAndTime(String date) {
   } catch (e) {
     return date;
   }
+}
+
+Line billLineFromFeaLine(Item menuLine) {
+  Line newLine = Line();
+  Ware ware = Ware();
+  try {
+    ware = menuStructure.menus!.wares!.ware!.firstWhere((element) => element.idcode == menuLine.idware);
+    newLine.idbill = currentBill.root!.billHead!.head!.idcode; //json['ID_BILL'];
+    newLine.idware = menuLine.idware; //json['ID_WARE'];
+    newLine.price = menuLine.price; //json['PRICE'];
+    if (ware.inStopList == 1) {
+      newLine.quantity = -1;
+    } else {
+      newLine.quantity = 0;
+    } //json['QUANTITY'];
+    newLine.taxraterow = 0; //json['TAX_RATE_ROW'];
+    newLine.sumraterow = 0; //json['SUM_RATE_ROW'];
+    newLine.taxrate = 0; //json['TAX_RATE'];
+    newLine.sumrate = 0; //json['SUM_RATE'];
+    newLine.markquantity = 0; //json['MARK_QUANTITY'];
+    newLine.norder = 1; //json['N_ORDER'];
+    newLine.idline = 0; //srvIdLine--; //json['ID_LINE'];
+    newLine.dispname = menuLine.dispname; //json['DISP_NAME'];
+    newLine.idfline = 0; //json['ID_FLINE'];
+    newLine.iscomplex = 0; //json['IS_COMPLEX'];
+    newLine.complexquantity = 1;// menuLine.quantity; //json['COMPLEX_QUANTITY'];
+    newLine.nodiscount = menuLine.nodiscount; //json['NO_DISCOUNT'];
+    newLine.originalid = 0; //json['ORIGINAL_ID'];
+    newLine.idmenu = menuLine.idmenu; //json['ID_MENU'];
+    newLine.isServed = 0; //json['IsServed'];
+    newLine.gnumber = 1; //json['G_NUMBER'];
+    newLine.packing = menuLine.packing; //json['PACKING'];
+    newLine.unitname = menuLine.unitname; //json['UNIT_NAME'];
+    newLine.idshop = menuLine.idshop; //json['ID_SHOP'];
+    newLine.marking = menuLine.marking; //json['MARKING'];
+    newLine.group = menuLine.idcash;
+    newLine.idchoice = 0;//menuLine.idchoice;
+    newLine.idcomplexline = 0;//menuLine.idline;
+  } catch (e) {
+    debugPrint('$e');
+  }
+  return newLine;
 }
 
 Line billLineFromMenuLine(MenuLine menuLine) {

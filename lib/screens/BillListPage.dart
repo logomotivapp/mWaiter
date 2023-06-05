@@ -17,7 +17,7 @@ class BillListPage extends HookWidget {
     return Scaffold(
       backgroundColor: const Color(0xffEDF0F1),
       body: GridView.count(
-        childAspectRatio: 20/21,
+        childAspectRatio: 162/184,
         crossAxisCount: 2,
         children: <Widget>[..._listado(context, bills)],
       ),
@@ -37,6 +37,7 @@ class BillListPage extends HookWidget {
   }
 
   List<Widget> _listado(BuildContext context, List<Bill?> lista) {
+    lista.sort((a,b)=> a!.tablenumber!.compareTo(b!.tablenumber!));
     List<Widget> listaWidget = [];
     for (var element in lista) {
       List<int> kurss = [];
@@ -44,23 +45,23 @@ class BillListPage extends HookWidget {
       if (element.iscurs3! == 1){ if (!kurss.contains(3)){kurss.add(3);}}
       String status = '';
       int lColor = 0;
-      switch (element.ready) {
-        case 0:
-          {
-            lColor = 0xffFFB5A5;
-            status = 'В работе';
-          }
-          break;
+      switch (element.iStatusBill) {
         case 1:
           {
-            lColor = 0xffFDE281;
-            status = 'В работе';
+            lColor = 0xffFFB5A5;
+            status = element.StatusBill!;
           }
           break;
         case 2:
           {
+            lColor = 0xffFDE281;
+            status = element.StatusBill!;
+          }
+          break;
+        case 3:
+          {
             lColor = 0xff75F599;
-            status = 'В работе';
+            status = element.StatusBill!;
           }
           break;
         default:{
@@ -73,7 +74,7 @@ class BillListPage extends HookWidget {
         bill: element,
         hColor: lColor,
         kurss: kurss,
-        status: status,
+        statusB: status,
       ));
     }
     return listaWidget;

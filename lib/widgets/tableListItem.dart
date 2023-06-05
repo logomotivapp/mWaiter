@@ -15,13 +15,14 @@ class TableItem extends StatefulWidget {
   final Bill bill;
   final int hColor;
   final List<int> kurss;
-  final String status;
+  final String statusB;
 
   const TableItem({
     super.key,
     required this.bill,
     this.hColor = 0xffFFB5A5,
-    required this.kurss, required this.status,
+    required this.kurss,
+    required this.statusB,
   });
 
   @override
@@ -38,179 +39,187 @@ class _PopupMenuItemState extends State<TableItem> {
       padding: const EdgeInsets.all(10.0),
       child: Container(
         decoration:
-            const BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(10)), color: Colors.white),
+            const BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(8)), color: Colors.white),
         child: SizedBox(
+          width: 162,
           height: 184,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              PopupMenuButton(
-                child: SizedBox(
-                  height: 160,
-                  child: Column(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(color: Color(widget.hColor)),
-                        child: Row(
-                          children: [
-                            Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  'Стол ${widget.bill.tablenumber}',
-                                  style: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 14,
-                                    fontFamily: "Montserrat",
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                                ),
-                                const Text(
-                                  'В работе',
-                                  style: TextStyle(
-                                    color: Colors.black45,
-                                    fontSize: 10,
-                                    fontFamily: "Montserrat",
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const Spacer(),
-                            Text(
-                              global.getTimeFromDateAndTime(widget.bill.billdate!),
-                              textAlign: TextAlign.right,
-                              style: const TextStyle(
-                                color: Color(0xb2000000),
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        height: 98,
-                        child: Container(
-                            alignment: Alignment.topLeft,
-                            child: ListView.builder(
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemCount: widget.bill.line!.length,
-                                itemBuilder: (_, index) => LineImg(
-                                      line: widget.bill.line![index],
-                                    ))),
-                      ),
-                      const Divider(),
-                      Row(
+          child: PopupMenuButton(
+            child: Column(
+              children: [
+                Flexible(
+                  flex: 42,
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Color(widget.hColor),
+                        borderRadius:
+                            const BorderRadius.only(topLeft: Radius.circular(8), topRight: Radius.circular(8))),
+                    child: Padding(
+                      padding: const EdgeInsets.all(3.0),
+                      child: Row(
                         children: [
-                          SizedBox(
-                            width: 11.51,
-                            height: 14.39,
-                            child: SvgPicture.asset('assets/images/guest.svg', semanticsLabel: 'vector'),
-                          ),
-                          const SizedBox(
-                            width: 5,
-                          ),
-                          Text(
-                            '${widget.bill.guestscount}',
-                            style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 14,
-                              fontFamily: "Montserrat",
-                              fontWeight: FontWeight.w800,
-                            ),
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'Стол ${widget.bill.tablenumber}',
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 14,
+                                  fontFamily: "Montserrat",
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                               Text(
+                                widget.statusB,
+                                style: const TextStyle(
+                                  color: Colors.black45,
+                                  fontSize: 10,
+                                  fontFamily: "Montserrat",
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            ],
                           ),
                           const Spacer(),
                           Text(
-                            NumberFormat.simpleCurrency(locale: 'ru-RU', decimalDigits: 2)
-                                .format(widget.bill.amount),
+                            global.getTimeFromDateAndTime(widget.bill.billdate!),
+                            textAlign: TextAlign.right,
                             style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 14,
-                              fontFamily: "Montserrat",
-                              fontWeight: FontWeight.w800,
+                              color: Color(0xb2000000),
+                              fontSize: 12,
                             ),
                           ),
-                          // const Text('₽'),
                         ],
+                      ),
+                    ),
+                  ),
+                ),
+                Flexible(
+                  flex: 120,
+                  child: Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: Container(
+                        alignment: Alignment.topLeft,
+                        child: ListView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: widget.bill.line!.length,
+                            itemBuilder: (_, index) => LineImg(
+                                  line: widget.bill.line![index],
+                                ))),
+                  ),
+                ),
+                const Divider(),
+                Flexible(
+                  flex: 30,
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: 11.51,
+                        height: 14.39,
+                        child: SvgPicture.asset('assets/images/guest.svg', semanticsLabel: 'vector'),
+                      ),
+                      const SizedBox(
+                        width: 5,
+                      ),
+                      Text(
+                        '${widget.bill.guestscount}',
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 14,
+                          fontFamily: "Montserrat",
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      const Spacer(),
+                      Text(
+                        NumberFormat.simpleCurrency(locale: 'ru-RU', decimalDigits: 2)
+                            .format(widget.bill.amount),
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 14,
+                          fontFamily: "Montserrat",
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      // const Text('₽'),
+                    ],
+                  ),
+                )
+              ],
+            ),
+            onSelected: (String item) {
+              selectedMenu = item;
+              if (selectedMenu!.contains('add')) {
+                // _toBill(widget.bill.idcode!);
+                Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => CurrentBill(widget.bill.idcode!),
+                            settings: const RouteSettings(name: "/currentbill")))
+                    .then((value) {
+                  widget.bill.guestscount = global.currentBill.root!.billHead!.head!.guestscount!;
+                  widget.bill.amount = global.currentBill.root!.billHead!.head!.amount!;
+                  setState(() {});
+                });
+              }
+              if (selectedMenu!.contains('pickup')) {
+                Future<bool> resu;
+                if (widget.kurss.contains(2) || widget.kurss.contains(3)) {
+                  showDialog(context: context, builder: (_) => kursAlert(kurss: widget.kurss))
+                      .then((value) => {
+                            if ((value != null) && (value != 1))
+                              {
+                                LoadingIndicatorDialog().show(context, text: 'Отправляю'),
+                                resu = pickupCurrentBill(widget.bill.idcode!, value),
+                                resu.then((value1) => {
+                                      LoadingIndicatorDialog().dismiss(),
+                                      if (!value1)
+                                        {
+                                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                            content: Text(
+                                              'Ошибка передачи марок',
+                                            ),
+                                            backgroundColor: Color(0xffFF6392),
+                                          ))
+                                        }
+                                    }),
+                              }
+                          });
+                }
+              }
+            },
+            itemBuilder: (BuildContext bc) {
+              return [
+                PopupMenuItem(
+                  value: '/add',
+                  child: Row(
+                    children: <Widget>[
+                      const Text("Дополнить"),
+                      const Spacer(),
+                      SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: SvgPicture.asset('assets/images/add.svg', semanticsLabel: 'vector'),
                       )
                     ],
                   ),
                 ),
-                onSelected: (String item) {
-                  selectedMenu = item;
-                  if (selectedMenu!.contains('add')) {
-                    // _toBill(widget.bill.idcode!);
-                    Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => CurrentBill(widget.bill.idcode!),
-                                settings: const RouteSettings(name: "/currentbill")))
-                        .then((value) {
-                      widget.bill.guestscount = global.currentBill.root!.billHead!.head!.guestscount!;
-                      widget.bill.amount = global.currentBill.root!.billHead!.head!.amount!;
-                      setState(() {});
-                    });
-                  }
-                  if (selectedMenu!.contains('pickup')) {
-                    Future<bool> resu;
-                    if (widget.kurss.contains(2) || widget.kurss.contains(3)) {
-                      showDialog(context: context, builder: (_) => kursAlert(kurss: widget.kurss))
-                          .then((value) => {
-                                if ((value != null) && (value != 1))
-                                  {
-                                    LoadingIndicatorDialog().show(context, text: 'Отправляю'),
-                                    resu = pickupCurrentBill(widget.bill.idcode!, value),
-                                    resu.then((value1) => {
-                                          LoadingIndicatorDialog().dismiss(),
-                                          if (!value1)
-                                            {
-                                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                                                content: Text(
-                                                  'Ошибка передачи марок',
-                                                ),
-                                                backgroundColor: Color(0xffFF6392),
-                                              ))
-                                            }
-                                        }),
-                                  }
-                              });
-                    }
-                  }
-                },
-                itemBuilder: (BuildContext bc) {
-                  return [
-                    PopupMenuItem(
-                      value: '/add',
-                      child: Row(
-                        children: <Widget>[
-                          const Text("Дополнить"),
-                          const Spacer(),
-                          SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: SvgPicture.asset('assets/images/add.svg', semanticsLabel: 'vector'),
-                          )
-                        ],
-                      ),
-                    ),
-                    PopupMenuItem(
-                      value: '/pickup',
-                      child: Row(
-                        children: <Widget>[
-                          const Text("Пикап"),
-                          const Spacer(),
-                          SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: SvgPicture.asset('assets/images/sale.svg', semanticsLabel: 'vector'),
-                          )
-                        ],
-                      ),
-                    ),
-                  ];
-                },
-              ),
-            ],
+                PopupMenuItem(
+                  value: '/pickup',
+                  child: Row(
+                    children: <Widget>[
+                      const Text("Пикап"),
+                      const Spacer(),
+                      SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: SvgPicture.asset('assets/images/sale.svg', semanticsLabel: 'vector'),
+                      )
+                    ],
+                  ),
+                ),
+              ];
+            },
           ),
         ),
       ),
@@ -240,8 +249,6 @@ class _PopupMenuItemState extends State<TableItem> {
     }
     return result;
   }
-
-
 }
 
 class LineImg extends StatelessWidget {
@@ -258,7 +265,8 @@ class LineImg extends StatelessWidget {
         const SizedBox(
           width: 5,
         ),
-        Text(line.quantity == '0'?' ':'${double.parse(line.quantity!).toStringAsFixed(0)}\n',
+        Text(
+          line.quantity == '0' ? ' ' : '${double.parse(line.quantity!).toStringAsFixed(0)}\n',
           style: const TextStyle(
               color: Color(0xb2000000),
               fontSize: 12,

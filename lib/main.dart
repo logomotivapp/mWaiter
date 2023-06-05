@@ -76,7 +76,7 @@ class MyHome extends StatelessWidget {
                     if (kDebugMode) {
                       if (global.uri.contains('Не задан') ||
                           global.uri.contains('81.23.108') ||
-                          global.uri.isEmpty) {
+                          global.uri.trim().isEmpty) {
                         global.uri = '192.168.1.33:90';
                       }
                     }

@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../models/GetBill.dart';
@@ -86,7 +85,7 @@ class _TablesTableItemState extends State<TablesTableItem> {
     String request = 'http://${global.uri}/apim/GetTables';
     final response = await dio.post(request,
         data:
-            '{\"Head\" : {\"ID_WAITER\":${global.waiter.user!.idcode},\"TABLE_NUMBER\":${widget.tableNumber},\"GUESTS_COUNT\":1}}');
+            '{"Head" : {"ID_WAITER":${global.waiter.user!.idcode},"TABLE_NUMBER":${widget.tableNumber},"GUESTS_COUNT":1}}');
     debugPrint(response.data!.toString());
       if (response.statusCode == 200) {
         getBill = GetBill.fromJson(response.data);
