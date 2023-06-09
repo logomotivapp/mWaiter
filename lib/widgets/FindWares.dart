@@ -6,8 +6,9 @@ import '../models/Line.dart';
 class FindWares extends StatefulWidget {
   final int guestNumber;
   final List<Line> listToFind;
+  final bool canSelect;
 
-  const FindWares({super.key, required this.guestNumber, required this.listToFind, });
+  const FindWares({super.key, required this.guestNumber, required this.listToFind, required this.canSelect, });
   @override
   State<FindWares> createState() => FindWareState();
 }
@@ -64,7 +65,7 @@ class FindWareState extends State<FindWares> {
               }, icon: const Icon(Icons.search)),
             ],
           ),
-          Flexible(child: MenuListRegular( guestNumber: widget.guestNumber, listOfLines: listToShow))
+          Flexible(child: MenuListRegular( guestNumber: widget.guestNumber, listOfLines: listToShow, canSelect: widget.canSelect,))
         ],
       ),
     );

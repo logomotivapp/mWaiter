@@ -38,8 +38,17 @@ class _PopupMenuItemState extends State<TableItem> {
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Container(
-        decoration:
-            const BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(8)), color: Colors.white),
+        decoration: const BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(8)),
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 6,
+              offset: Offset(10, 10),
+            ),
+          ],
+        ),
         child: SizedBox(
           width: 162,
           height: 184,
@@ -47,21 +56,24 @@ class _PopupMenuItemState extends State<TableItem> {
             child: Column(
               children: [
                 Flexible(
-                  flex: 42,
+                  flex: 43,
                   child: Container(
                     decoration: BoxDecoration(
                         color: Color(widget.hColor),
-                        borderRadius:
-                            const BorderRadius.only(topLeft: Radius.circular(8), topRight: Radius.circular(8))),
+                        borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(8), topRight: Radius.circular(8))),
                     child: Padding(
-                      padding: const EdgeInsets.all(3.0),
-                      child: Row(
+                      padding: const EdgeInsets.fromLTRB(8, 0, 6, 2),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
+                          Row(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               Text(
                                 'Стол ${widget.bill.tablenumber}',
+                                textAlign: TextAlign.start,
                                 style: const TextStyle(
                                   color: Colors.black,
                                   fontSize: 14,
@@ -69,7 +81,13 @@ class _PopupMenuItemState extends State<TableItem> {
                                   fontWeight: FontWeight.w800,
                                 ),
                               ),
-                               Text(
+                            ],
+                          ),
+                          Row(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
                                 widget.statusB,
                                 style: const TextStyle(
                                   color: Colors.black45,
@@ -78,16 +96,17 @@ class _PopupMenuItemState extends State<TableItem> {
                                   fontWeight: FontWeight.w800,
                                 ),
                               ),
+
+                              // const Spacer(),
+                              Text(
+                                global.getTimeFromDateAndTime(widget.bill.billdate!),
+                                textAlign: TextAlign.right,
+                                style: const TextStyle(
+                                  color: Color(0xb2000000),
+                                  fontSize: 12,
+                                ),
+                              ),
                             ],
-                          ),
-                          const Spacer(),
-                          Text(
-                            global.getTimeFromDateAndTime(widget.bill.billdate!),
-                            textAlign: TextAlign.right,
-                            style: const TextStyle(
-                              color: Color(0xb2000000),
-                              fontSize: 12,
-                            ),
                           ),
                         ],
                       ),
@@ -111,38 +130,41 @@ class _PopupMenuItemState extends State<TableItem> {
                 const Divider(),
                 Flexible(
                   flex: 30,
-                  child: Row(
-                    children: [
-                      SizedBox(
-                        width: 11.51,
-                        height: 14.39,
-                        child: SvgPicture.asset('assets/images/guest.svg', semanticsLabel: 'vector'),
-                      ),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      Text(
-                        '${widget.bill.guestscount}',
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 14,
-                          fontFamily: "Montserrat",
-                          fontWeight: FontWeight.w800,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: 11.51,
+                          height: 14.39,
+                          child: SvgPicture.asset('assets/images/guest.svg', semanticsLabel: 'vector'),
                         ),
-                      ),
-                      const Spacer(),
-                      Text(
-                        NumberFormat.simpleCurrency(locale: 'ru-RU', decimalDigits: 2)
-                            .format(widget.bill.amount),
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 14,
-                          fontFamily: "Montserrat",
-                          fontWeight: FontWeight.w800,
+                        const SizedBox(
+                          width: 5,
                         ),
-                      ),
-                      // const Text('₽'),
-                    ],
+                        Text(
+                          '${widget.bill.guestscount}',
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 14,
+                            fontFamily: "Montserrat",
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        const Spacer(),
+                        Text(
+                          NumberFormat.simpleCurrency(locale: 'ru-RU', decimalDigits: 2)
+                              .format(widget.bill.amount),
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 14,
+                            fontFamily: "Montserrat",
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        // const Text('₽'),
+                      ],
+                    ),
                   ),
                 )
               ],

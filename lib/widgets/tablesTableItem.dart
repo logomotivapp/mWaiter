@@ -49,8 +49,9 @@ class _TablesTableItemState extends State<TablesTableItem> {
             style: TextStyle(fontSize: 14, color: fontColor),
           ),
           onPressed: () {
-           // if (widget.isUsed == 0) {
+            if (!global.isSnackbarActive) {
               setState(() {
+                global.isSnackbarActive = true;
                 backColor = const Color(0xffB5F4B3);
                 ScaffoldMessenger.of(context)
                     .showSnackBar(SnackBar(
@@ -70,9 +71,10 @@ class _TablesTableItemState extends State<TablesTableItem> {
                     .closed
                     .then((value) => setState(() {
                           backColor = const Color(0xffffffff);
+                          global.isSnackbarActive = false;
                         }));
               });
-           // }
+           }
           },
         ),
       ),

@@ -14,14 +14,15 @@ import 'BillImageText.dart';
 
 class MenuWithTab extends StatefulWidget {
   final int guestNum;
+  final bool canSelect;
 
-  const MenuWithTab(this.guestNum, {super.key});
+  const MenuWithTab({super.key, required this.guestNum, required this.canSelect});
 
   @override
   State<MenuWithTab> createState() => MenuWithTabHome();
 }
 
-class MenuWithTabHome extends State<MenuWithTab> with TickerProviderStateMixin , WidgetsBindingObserver {
+class MenuWithTabHome extends State<MenuWithTab> with TickerProviderStateMixin, WidgetsBindingObserver {
   String title = 'Меню';
   List<MenuHead> listMenuHead = [];
   List<MenuHead> listComplexHead = [];
@@ -58,26 +59,47 @@ class MenuWithTabHome extends State<MenuWithTab> with TickerProviderStateMixin ,
     return result;
   }
 
-  int dayTo(){
+  int dayTo() {
     int i = DateTime.now().weekday;
     switch (i) {
-      case 1 : { i = 1; }
+      case 1:
+        {
+          i = 1;
+        }
         break;
-      case 2 : { i = 2; }
-      break;
-      case 3 : { i = 4; }
-      break;
-      case 4 : { i = 8; }
-      break;
-      case 5 : { i = 16; }
-      break;
-      case 6 : { i = 32; }
-      break;
-      case 7 : { i = 64; }
-      break;
+      case 2:
+        {
+          i = 2;
+        }
+        break;
+      case 3:
+        {
+          i = 4;
+        }
+        break;
+      case 4:
+        {
+          i = 8;
+        }
+        break;
+      case 5:
+        {
+          i = 16;
+        }
+        break;
+      case 6:
+        {
+          i = 32;
+        }
+        break;
+      case 7:
+        {
+          i = 64;
+        }
+        break;
     }
     return i;
-}
+  }
 
   void allDataRefresh(int menuID, int groupID) {
     listOfMenuLines.clear();
@@ -105,16 +127,18 @@ class MenuWithTabHome extends State<MenuWithTab> with TickerProviderStateMixin ,
       }
     }
     listOfLines.sort((a, b) => a.dispname != null
-        ? b.dispname != null ? a.dispname!.toLowerCase().compareTo(b.dispname!.toLowerCase())
-        : 1 : 0
-            );
+        ? b.dispname != null
+            ? a.dispname!.toLowerCase().compareTo(b.dispname!.toLowerCase())
+            : 1
+        : 0);
     listOfMenuLinesPop.clear();
     listOfMenuLinesPop.addAll(listOfMenuLines);
     listOfMenuLinesPop.sort((a, b) => b.weight!.compareTo(a.weight!));
     poplistOfLinesAll.clear();
     for (var element in listOfMenuLinesPop) {
-      if (element.idware != null){
-      poplistOfLinesAll.add(global.billLineFromMenuLine(element));}
+      if (element.idware != null) {
+        poplistOfLinesAll.add(global.billLineFromMenuLine(element));
+      }
     }
     poplistOfLines.clear();
     if (groupID > 0) {
@@ -142,6 +166,7 @@ class MenuWithTabHome extends State<MenuWithTab> with TickerProviderStateMixin ,
   }
 
   late TabController _controller;
+
   //int _selectedIndex = 0;
 
   @override
@@ -162,15 +187,15 @@ class MenuWithTabHome extends State<MenuWithTab> with TickerProviderStateMixin ,
       }
     }
 
-      listComplexHead.clear();
-      for (var element in global.menuStructure.menus!.menu!.menuHead!) {
-        if ((element.idtype!.contains('COMPLEX'))  && (menuInTime(element.idcode!))) {
-          listComplexHead.add(element);
-        }
-    }
-      if (listComplexHead.isNotEmpty){
-        listMenuHead.add(MenuHead(idcode: -100, dispname: 'КОМП ЛЕКСЫ', menudate: '', menuLine: []));
+    listComplexHead.clear();
+    for (var element in global.menuStructure.menus!.menu!.menuHead!) {
+      if ((element.idtype!.contains('COMPLEX')) && (menuInTime(element.idcode!))) {
+        listComplexHead.add(element);
       }
+    }
+    if (listComplexHead.isNotEmpty) {
+      listMenuHead.add(MenuHead(idcode: -100, dispname: 'КОМП ЛЕКСЫ', menudate: '', menuLine: []));
+    }
 
     listOfLinesAll.clear();
     for (var element in listMenuHead) {
@@ -196,9 +221,7 @@ class MenuWithTabHome extends State<MenuWithTab> with TickerProviderStateMixin ,
     switch (state) {
       case AppLifecycleState.paused:
         var result = global.saveCurrentBill();
-        result.then((value) => {
-          Navigator.popUntil(context, (route) => route.settings.name == "/prebills")
-        });
+        result.then((value) => {Navigator.popUntil(context, (route) => route.settings.name == "/prebills")});
         break;
       case AppLifecycleState.inactive:
       case AppLifecycleState.resumed:
@@ -235,8 +258,8 @@ class MenuWithTabHome extends State<MenuWithTab> with TickerProviderStateMixin ,
           ),
         ),
       ),
-      bottom: TabBar(indicatorWeight: 6.0, indicatorColor: Colors.white, controller: _controller,
-          tabs: const [
+      bottom:
+          TabBar(indicatorWeight: 6.0, indicatorColor: Colors.white, controller: _controller, tabs: const [
         Tab(
           child: Text(
             'Меню',
@@ -303,9 +326,18 @@ class MenuWithTabHome extends State<MenuWithTab> with TickerProviderStateMixin ,
             MenuListRegular(
               listOfLines: listOfLines,
               guestNumber: widget.guestNum,
+              canSelect: widget.canSelect,
             ),
-            MenuListRegular(listOfLines: poplistOfLines, guestNumber: widget.guestNum),
-            FindWares(guestNumber: widget.guestNum, listToFind: listOfLinesAll),
+            MenuListRegular(
+              listOfLines: poplistOfLines,
+              guestNumber: widget.guestNum,
+              canSelect: widget.canSelect,
+            ),
+            FindWares(
+              guestNumber: widget.guestNum,
+              listToFind: listOfLinesAll,
+              canSelect: widget.canSelect,
+            ),
           ],
         ),
       ),
@@ -317,24 +349,30 @@ class MenuWithTabHome extends State<MenuWithTab> with TickerProviderStateMixin ,
     for (var element in listOf) {
       listOfWidget.add(TextButton(
         onPressed: () {
-          if (element.idcode! == -100){
-            Navigator.push(context, MaterialPageRoute(builder: (context) => ComplexList(listComplexHead: listComplexHead, guestNum: widget.guestNum,)));
+          if (element.idcode! == -100) {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ComplexList(
+                          listComplexHead: listComplexHead,
+                          guestNum: widget.guestNum,
+                        )));
+          } else {
+            setState(() {
+              menuId = element.idcode!;
+              menuTitle = element.dispname!;
+              groupId = 0;
+              groupTitle = '';
+              allDataRefresh(menuId, groupId);
+              title = menuTitle;
+              if (cashGroups.isEmpty) {
+                _controller.animateTo(2);
+              } else {
+                _controller.animateTo(1);
+              }
+            });
           }
-          else{
-          setState(() {
-            menuId = element.idcode!;
-            menuTitle = element.dispname!;
-            groupId = 0;
-            groupTitle = '';
-            allDataRefresh(menuId, groupId);
-            title = menuTitle;
-            if (cashGroups.isEmpty) {
-              _controller.animateTo(2);
-            } else {
-              _controller.animateTo(1);
-            }
-          });
-        }},
+        },
         child: Material(
           elevation: 10,
           borderRadius: BorderRadius.circular(8),

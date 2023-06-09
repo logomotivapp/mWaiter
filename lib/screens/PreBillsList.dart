@@ -1,8 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:restismob/screens/BillListPage.dart';
 import 'package:focus_detector/focus_detector.dart';
+import 'package:restismob/screens/tablesList.dart';
 
 import '../global.dart';
 import '../models/Featured/Fea.dart';
@@ -11,6 +13,8 @@ import '../models/PreBills.dart';
 import '../models/Bill.dart';
 import '../global.dart' as global;
 import '../models/menu/MenuStructure.dart';
+import 'MenuWithTab.dart';
+import 'Settings.dart';
 import 'emptyBillList.dart';
 import 'package:restismob/widgets/myProgressIndicator.dart';
 
@@ -60,16 +64,86 @@ class PreBillListHome extends ConsumerState<PreBillList> with WidgetsBindingObse
     var appBar = AppBar(
       backgroundColor: const Color(0xff68a3ab),
       centerTitle: true,
-      leading: InkWell(
-        onTap: () {
-          //global.navKey.currentState!.pop();
-          Navigator.of(context).maybePop();
-        },
-        child: const Icon(
-          Icons.arrow_back,
-          color: Colors.white60,
-        ),
-      ),
+      leading: PopupMenuButton(
+          icon: const Icon(Icons.menu_sharp),
+          onSelected:(String item){
+            if (item.contains('/manr')) {
+              Navigator.of(context).maybePop();
+            }
+            if (item.contains('/menur')) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const MenuWithTab(
+                      guestNum: 1,
+                      canSelect: false,
+                    )),
+              );
+            }
+            if (item.contains('/tabler')) {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const TablesList()));
+            }
+            if (item.contains('/settr')) {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => Settings()));
+            }
+          },
+          itemBuilder: (BuildContext bc) {
+            return [
+               PopupMenuItem(
+                  value: '/manr',
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          SizedBox(
+                            width: 17.81,
+                            height: 19.35,
+                            child: SvgPicture.asset(
+                              'assets/images/door.svg',
+                              semanticsLabel: 'vector',
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(children: <Widget>[
+                        SizedBox(
+                          width: 36,
+                          height: 36,
+                          child: SvgPicture.asset(
+                            'assets/images/man.svg',
+                            semanticsLabel: 'vector',
+                          ),
+                        ),
+                        Text(global.waiter.user!.username!, maxLines: 2,)
+
+                      ]),
+                    ],
+                  )),
+              const PopupMenuItem(
+                  value: '/menur',
+                  child: Row(children: <Widget>[
+                    Text('Меню'),
+                    Spacer(),
+                    Icon(Icons.menu_book, color: Colors.black45,),
+                  ])),
+              const PopupMenuItem(
+                  value: '/tabler',
+                  child: Row(children: <Widget>[
+                    Text('Столы'),
+                    Spacer(),
+                    Icon(Icons.list, color: Colors.black45,),
+                  ])),
+              const PopupMenuItem(
+                  value: '/settr',
+                  child: Row(children: <Widget>[
+                    Text('Настройки'),
+                    Spacer(),
+                    Icon(Icons.settings, color: Colors.black45,),
+                  ])),
+            ];
+          }),
       title: const Text(
         "Заказы",
         textAlign: TextAlign.center,
@@ -88,7 +162,10 @@ class PreBillListHome extends ConsumerState<PreBillList> with WidgetsBindingObse
             },
             icon: const Icon(Icons.refresh))
       ],
-      bottom: const TabBar(indicatorWeight: 6.0, indicatorColor: Colors.white,
+      bottom: const TabBar(indicatorWeight: 6.0,
+          indicatorColor: Colors.white,
+          labelPadding: EdgeInsets.symmetric(horizontal: 20.0),
+          indicatorPadding: EdgeInsets.symmetric(horizontal: 20.0),
           tabs: [
         Tab(
           text: 'Все',
@@ -341,8 +418,6 @@ Future<Fea> loadFeature() async {
   }
 }
 
-AutoDisposeFutureProvider<Fea> feaProvider =
-FutureProvider.autoDispose<Fea>((ref) async {
+AutoDisposeFutureProvider<Fea> feaProvider = FutureProvider.autoDispose<Fea>((ref) async {
   return await loadFeature();
 });
-

@@ -51,7 +51,7 @@ class GuestMeal extends ConsumerWidget {
     }
 //    List<MenuLine> listOfMenuLines = [];
     List<Line> poplistOfLines = [];
- /*   for (var element in global.menuStructure.menus!.menu!.menuHead!) {
+    /*   for (var element in global.menuStructure.menus!.menu!.menuHead!) {
       if (element.idtype!.contains('ALACA')) {
         element.menuLine!.sort((a, b) => b.weight!.compareTo(a.weight!));
         listOfMenuLines.addAll((element.menuLine!.take(10)).toList());
@@ -495,7 +495,13 @@ class GuestMeal extends ConsumerWidget {
                   ),
                   onPressed: () {
                     Navigator.push(
-                        context, MaterialPageRoute(builder: (context) => MenuWithTab(guestNumber)));
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => MenuWithTab(
+                                guestNum: guestNumber,
+                                canSelect: true,
+                              )),
+                    );
                   },
                 ),
               )),

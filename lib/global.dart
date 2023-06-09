@@ -28,7 +28,7 @@ bool isLoading = false;
 bool itemSelected = false;
 int srvIdLine = 0;
 Fea fea = Fea();
-
+bool isSnackbarActive = false;
 //final navKey = GlobalKey<NavigatorState>();
 final controllerProvider = StateProvider<String>((ref) {
   return "";
@@ -75,7 +75,7 @@ Line billLineFromFeaLine(Item menuLine) {
     newLine.dispname = menuLine.dispname; //json['DISP_NAME'];
     newLine.idfline = 0; //json['ID_FLINE'];
     newLine.iscomplex = 0; //json['IS_COMPLEX'];
-    newLine.complexquantity = 1;// menuLine.quantity; //json['COMPLEX_QUANTITY'];
+    newLine.complexquantity = 1; // menuLine.quantity; //json['COMPLEX_QUANTITY'];
     newLine.nodiscount = menuLine.nodiscount; //json['NO_DISCOUNT'];
     newLine.originalid = 0; //json['ORIGINAL_ID'];
     newLine.idmenu = menuLine.idmenu; //json['ID_MENU'];
@@ -86,8 +86,8 @@ Line billLineFromFeaLine(Item menuLine) {
     newLine.idshop = menuLine.idshop; //json['ID_SHOP'];
     newLine.marking = menuLine.marking; //json['MARKING'];
     newLine.group = menuLine.idcash;
-    newLine.idchoice = 0;//menuLine.idchoice;
-    newLine.idcomplexline = 0;//menuLine.idline;
+    newLine.idchoice = 0; //menuLine.idchoice;
+    newLine.idcomplexline = 0; //menuLine.idline;
   } catch (e) {
     debugPrint('$e');
   }
@@ -99,7 +99,11 @@ Line billLineFromMenuLine(MenuLine menuLine) {
   Ware ware = Ware();
   try {
     ware = menuStructure.menus!.wares!.ware!.firstWhere((element) => element.idcode == menuLine.idware);
-    newLine.idbill = currentBill.root!.billHead!.head!.idcode; //json['ID_BILL'];
+    if (currentBill.root == null) {
+      newLine.idbill = -1;
+    } else {
+      newLine.idbill = currentBill.root!.billHead!.head!.idcode;
+    } //json['ID_BILL'];
     newLine.idware = menuLine.idware; //json['ID_WARE'];
     newLine.price = menuLine.price; //json['PRICE'];
     if (ware.inStopList == 1) {
