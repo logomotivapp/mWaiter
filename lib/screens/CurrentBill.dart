@@ -177,7 +177,7 @@ class _CurrentBillState extends ConsumerState<CurrentBill> with WidgetsBindingOb
                                   trailing: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      !guestHaveLine(index + commonGuest)
+                                      !guestHaveLine(index + commonGuest) && ((index + commonGuest) > 1)
                                           ? IconButton(
                                               onPressed: () {
                                                 for (var element
@@ -207,7 +207,6 @@ class _CurrentBillState extends ConsumerState<CurrentBill> with WidgetsBindingOb
                                                         global.currentBill.billSumm(),
                                                     ref.read(numGuestsProvider.notifier).state =
                                                         global.currentBill.root!.billHead!.head!.guestscount!,
-
                                                   });
                                         },
                                       ),
@@ -397,36 +396,37 @@ class _CurrentBillState extends ConsumerState<CurrentBill> with WidgetsBindingOb
 
 Future<GetBill> loadCurrentBill(num billId) async {
   GetBill? getBill;
-  var dio = Dio(BaseOptions(connectTimeout: const Duration(seconds: 15)));
-  String request =
-      'http://${global.uri}/apim/Bill?Id_Bill=${billId.toString()}&Id_Waiter=${global.waiter.user!.idcode}';
-  final response = await dio.get(request);
-  debugPrint(response.data!.toString());
-  if (response.statusCode == 200) {
-    getBill = GetBill.fromJson(response.data);
-    if (getBill.root!.msgStatus!.msg!.idStatus == 0) {
-      global.ref1!.read(numTableProvider.notifier).state = getBill.root!.billHead!.head!.tablenumber!;
-      global.ref1!.read(amountProvider.notifier).state = getBill.root!.billHead!.head!.amount!;
-    } else {
-      if (getBill.root!.msgStatus!.msg!.msgError!.isNotEmpty) {
-        ScaffoldMessenger.of(global.context1!).showSnackBar(
-          SnackBar(
-            content: Text(
-              getBill.root!.msgStatus!.msg!.msgError!,
-              style: const TextStyle(
-                fontSize: 18,
-                fontFamily: "Montserrat",
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            backgroundColor: Colors.redAccent,
-          ),
-        );
-        Navigator.of(global.context1!).pop();
-      }
-    }
+  if (billId == -1) {
+    getBill = global.currentBill;
   } else {
-    getBill = null;
+    var dio = Dio(BaseOptions(connectTimeout: const Duration(seconds: 15)));
+    String request =
+        'http://${global.uri}/apim/Bill?Id_Bill=${billId.toString()}&Id_Waiter=${global.waiter.user!.idcode}';
+    final response = await dio.get(request);
+    debugPrint(response.data!.toString());
+    if (response.statusCode == 200) {
+      getBill = GetBill.fromJson(response.data);
+      if (getBill.root!.msgStatus!.msg!.idStatus != 0) {
+        if (getBill.root!.msgStatus!.msg!.msgError!.isNotEmpty) {
+          ScaffoldMessenger.of(global.context1!).showSnackBar(
+            SnackBar(
+              content: Text(
+                getBill.root!.msgStatus!.msg!.msgError!,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontFamily: "Montserrat",
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              backgroundColor: Colors.redAccent,
+            ),
+          );
+          Navigator.of(global.context1!).pop();
+        }
+      }
+    } else {
+      getBill = null;
+    }
   }
   return getBill!;
 }
@@ -438,6 +438,8 @@ AutoDisposeFutureProvider<GetBill> billProvider = FutureProvider.autoDispose<Get
   if (getBill.root != null) {
     if (getBill.root!.billHead!.head != null) {
       global.ref1!.read(numGuestsProvider.notifier).state = getBill.root!.billHead!.head!.guestscount!;
+      global.ref1!.read(numTableProvider.notifier).state = getBill.root!.billHead!.head!.tablenumber!;
+      global.ref1!.read(amountProvider.notifier).state = getBill.root!.billHead!.head!.amount!;
     }
   }
   return getBill;

@@ -7,8 +7,7 @@ import 'package:restismob/global.dart' as global;
 import '../screens/CurrentBill.dart';
 
 class TablesTableItem extends StatefulWidget {
-  const TablesTableItem(
-      {super.key, required this.tableNumber, required this.isUsed});
+  const TablesTableItem({super.key, required this.tableNumber, required this.isUsed});
 
   final int tableNumber;
   final int isUsed;
@@ -33,16 +32,13 @@ class _TablesTableItemState extends State<TablesTableItem> {
       height: 60,
       width: 60,
       child: Container(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(5),
-            color: backColor,
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.grey,
-                blurRadius: 3.0, // soften the shadow
-                spreadRadius: 2.0, //extend the shadow
-              )
-            ]),
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(5), color: backColor, boxShadow: const [
+          BoxShadow(
+            color: Colors.grey,
+            blurRadius: 3.0, // soften the shadow
+            spreadRadius: 2.0, //extend the shadow
+          )
+        ]),
         child: TextButton(
           child: Text(
             widget.tableNumber.toString(),
@@ -74,7 +70,7 @@ class _TablesTableItemState extends State<TablesTableItem> {
                           global.isSnackbarActive = false;
                         }));
               });
-           }
+            }
           },
         ),
       ),
@@ -89,23 +85,29 @@ class _TablesTableItemState extends State<TablesTableItem> {
         data:
             '{"Head" : {"ID_WAITER":${global.waiter.user!.idcode},"TABLE_NUMBER":${widget.tableNumber},"GUESTS_COUNT":1}}');
     debugPrint(response.data!.toString());
-      if (response.statusCode == 200) {
-        getBill = GetBill.fromJson(response.data);
-        if (getBill.root!.msgStatus!.msg!.idStatus == 0) {
-          goToBill(getBill.root!.billHead!.head!.idcode!);
-        } else {
-          goMsg(getBill.root!.msgStatus!.msg!.msgError!);
+    if (response.statusCode == 200) {
+      getBill = GetBill.fromJson(response.data);
+      if (getBill.root!.msgStatus!.msg!.idStatus == 0) {
+        if (getBill.root!.billHead!.head!.idcode == -1) {
+          global.currentBill = getBill;
         }
+        goToBill(getBill.root!.billHead!.head!.idcode!);
       } else {
-        goMsg('Ошибка подключения');
+        goMsg(getBill.root!.msgStatus!.msg!.msgError!);
       }
+    } else {
+      goMsg('Ошибка подключения');
+    }
   }
 
-  void goMsg(String msg){
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg), backgroundColor: Colors.redAccent,));
+  void goMsg(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(msg),
+      backgroundColor: Colors.redAccent,
+    ));
   }
 
-  void goToBill(int idCode){
+  void goToBill(int idCode) {
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => CurrentBill(idCode)));
   }
 }
