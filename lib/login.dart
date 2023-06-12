@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:package_info/package_info.dart';
 import 'package:restismob/screens/PreBillsList.dart';
 import 'package:restismob/screens/Settings.dart';
 import 'package:restismob/widgets/myFloatingButton.dart';
-
 
 import 'global.dart';
 import 'models/Waiter.dart';
@@ -55,10 +55,7 @@ class Login extends ConsumerWidget {
       appBar: appBar,
       body: Container(
         alignment: Alignment.center,
-        height: (MediaQuery
-            .of(context)
-            .size
-            .height - appBar.preferredSize.height) / 2,
+        height: (MediaQuery.of(context).size.height - appBar.preferredSize.height) / 2,
         child: Column(
           children: <Widget>[
             const Spacer(),
@@ -79,13 +76,13 @@ class Login extends ConsumerWidget {
   }
 
   Future<void> loadWaiter() async {
+    final PackageInfo info = await PackageInfo.fromPlatform();
     Waiter employee;
     try {
-      global.ref1
-          ?.read(loadProvider.notifier)
-          .state = true;
+      String version = info.version;
+      global.ref1?.read(loadProvider.notifier).state = true;
       var dio = Dio(BaseOptions(connectTimeout: const Duration(seconds: 15)));
-      String request = 'http://${global.uri}/apim/GetUser?Phone=${global.telNum.trim()}';
+      String request = 'http://${global.uri}/apim/GetUser?Phone=${global.telNum.trim()}&sVersion=$version';
       // final response = await  dio.get('http://10.0.2.2:53535/apim/GetUser?Phone=79211234567');
       final response = await dio.get(request);
       debugPrint(response.data!.toString());
@@ -93,18 +90,16 @@ class Login extends ConsumerWidget {
         employee = Waiter.fromJson(response.data);
         if (employee.user!.iderror == 0) {
           waiter = employee;
-          global.ref1
-              ?.read(loadProvider.notifier)
-              .state = false;
+          global.ref1?.read(loadProvider.notifier).state = false;
           //_toBillList(waiter.user!.idcode!);
           Navigator.push(
-              context1!, MaterialPageRoute(builder: (context) => PreBillList(waiter.user!.idcode!),
-              settings: const RouteSettings(name: "/prebills")));
+              context1!,
+              MaterialPageRoute(
+                  builder: (context) => PreBillList(waiter.user!.idcode!),
+                  settings: const RouteSettings(name: "/prebills")));
         } else {
           waiter = Waiter();
-          global.ref1
-              ?.read(loadProvider.notifier)
-              .state = false;
+          global.ref1?.read(loadProvider.notifier).state = false;
           String msg = 'ОШИБКА !!!';
           if (employee.user!.msgerror != null) {
             msg = employee.user!.msgerror!;
@@ -119,18 +114,14 @@ class Login extends ConsumerWidget {
           ScaffoldMessenger.of(context1!).showSnackBar(snackBar);
         }
       } else {
-        global.ref1
-            ?.read(loadProvider.notifier)
-            .state = false;
+        global.ref1?.read(loadProvider.notifier).state = false;
         ScaffoldMessenger.of(context1!).showSnackBar(const SnackBar(content: Text('ОЙ! Всё сломалось')));
         throw Exception("Cannot get user");
       }
       global.isLoading = false;
     } catch (e) {
       debugPrint(e.toString());
-      global.ref1
-          ?.read(loadProvider.notifier)
-          .state = false;
+      global.ref1?.read(loadProvider.notifier).state = false;
       ScaffoldMessenger.of(context1!).showSnackBar(const SnackBar(
         content: Text('Нет подключения'),
         backgroundColor: Colors.redAccent,
@@ -147,9 +138,7 @@ class Login extends ConsumerWidget {
           child: TextField(
             controller: controller,
             onChanged: (value) {
-              ref
-                  .read(controllerProvider.notifier)
-                  .state = value;
+              ref.read(controllerProvider.notifier).state = value;
             },
             style: const TextStyle(
               fontSize: 40,
