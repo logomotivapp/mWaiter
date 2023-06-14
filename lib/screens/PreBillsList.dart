@@ -14,7 +14,7 @@ import '../models/Bill.dart';
 import '../global.dart' as global;
 import '../models/menu/MenuStructure.dart';
 import 'MenuWithTab.dart';
-import 'Settings.dart';
+import 'SettingsR.dart';
 import 'emptyBillList.dart';
 import 'package:restismob/widgets/myProgressIndicator.dart';
 
@@ -84,7 +84,7 @@ class PreBillListHome extends ConsumerState<PreBillList> with WidgetsBindingObse
               Navigator.push(context, MaterialPageRoute(builder: (context) => const TablesList()));
             }
             if (item.contains('/settr')) {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => Settings()));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsR(canEdit: false,)));
             }
           },
           itemBuilder: (BuildContext bc) {

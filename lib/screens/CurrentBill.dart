@@ -298,71 +298,74 @@ class _CurrentBillState extends ConsumerState<CurrentBill> with WidgetsBindingOb
                           height: 160,
                           alignment: Alignment.bottomCenter,
                           color: Colors.white,
-                          child: Column(
-                            children: [
-                              Container(
-                                  width: 59,
-                                  alignment: Alignment.center,
-                                  child: const Divider(
-                                    thickness: 3,
-                                    color: Colors.black54,
-                                  )),
-                              Row(
-                                children: [
-                                  Text(
-                                    'Итого  ${NumberFormat.simpleCurrency(locale: 'ru-RU', decimalDigits: 2).format(amount)} ',
-                                    style: const TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 14,
-                                      fontFamily: "Montserrat",
-                                      fontWeight: FontWeight.w800,
-                                    ),
-                                  ),
-                                  //const Text('₽'),
-                                ],
-                              ),
-                              const Row(
-                                children: [
-                                  Text(
-                                    'Без учета скидок',
-                                    style: TextStyle(
-                                      color: Colors.black26,
-                                      fontSize: 12,
-                                      fontFamily: "Montserrat",
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Container(
-                                alignment: Alignment.bottomRight,
-                                child: Column(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                            child: Column(
+                              children: [
+                                Container(
+                                    width: 59,
+                                    alignment: Alignment.center,
+                                    child: const Divider(
+                                      thickness: 3,
+                                      color: Colors.black54,
+                                    )),
+                                Row(
                                   children: [
-                                    CircleAvatar(
-                                      radius: 25,
-                                      backgroundColor: Colors.black26,
-                                      child: IconButton(
-                                        color: Colors.white,
-                                        icon: const Icon(Icons.checklist_rtl_sharp),
-                                        onPressed: () {
-                                          Navigator.push(context,
-                                              MaterialPageRoute(builder: (context) => const BillImageText()));
-                                        },
+                                    Text(
+                                      '  Итого  ${NumberFormat.simpleCurrency(locale: 'ru-RU', decimalDigits: 2).format(amount)} ',
+                                      style: const TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 14,
+                                        fontFamily: "Montserrat",
+                                        fontWeight: FontWeight.w800,
                                       ),
                                     ),
-                                    const Text(
-                                      'Просмотр счета',
+                                    //const Text('₽'),
+                                  ],
+                                ),
+                                const Row(
+                                  children: [
+                                    Text(
+                                      '  Без учета скидок',
                                       style: TextStyle(
                                         color: Colors.black26,
                                         fontSize: 12,
                                         fontFamily: "Montserrat",
-                                        fontWeight: FontWeight.w500,
+                                        fontWeight: FontWeight.w400,
                                       ),
-                                    )
+                                    ),
                                   ],
                                 ),
-                              )
-                            ],
+                                Container(
+                                  alignment: Alignment.bottomRight,
+                                  child: Column(
+                                    children: [
+                                      CircleAvatar(
+                                        radius: 25,
+                                        backgroundColor: Colors.black26,
+                                        child: IconButton(
+                                          color: Colors.white,
+                                          icon: const Icon(Icons.checklist_rtl_sharp),
+                                          onPressed: () {
+                                            Navigator.push(context,
+                                                MaterialPageRoute(builder: (context) => const BillImageText()));
+                                          },
+                                        ),
+                                      ),
+                                      const Text(
+                                        'Просмотр счета',
+                                        style: TextStyle(
+                                          color: Colors.black26,
+                                          fontSize: 12,
+                                          fontFamily: "Montserrat",
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
                           ),
                         ),
                       )

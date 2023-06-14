@@ -6,7 +6,7 @@ import '../models/Tables.dart';
 class TablesGrid extends StatelessWidget {
   final List<Tables> tables;
 
-  TablesGrid({super.key, required this.tables});
+  const TablesGrid({super.key, required this.tables});
 
   @override
   Widget build(BuildContext context) {
@@ -14,9 +14,9 @@ class TablesGrid extends StatelessWidget {
       backgroundColor: const Color(0xffEDF0F1),
       body: Column(
         children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: const Text(
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text(
               'Выберите нужный стол\nдля оформления заказа:',
               style: TextStyle(
                   fontSize: 14,
@@ -29,6 +29,7 @@ class TablesGrid extends StatelessWidget {
           ),
           Flexible(
             child: GridView.count(
+              padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
               shrinkWrap: true,
               crossAxisCount: 5,
               crossAxisSpacing: 10,

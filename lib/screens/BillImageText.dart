@@ -51,7 +51,7 @@ class BillImageText extends StatelessWidget {
       }
       listsOfWidgets.add(
         Text(
-          i == 0 ? 'Общий ' : 'Гость $i',
+          i == 0 ? '  Общий ' :  '  Гость $i',
           style: const TextStyle(
               fontSize: 18, fontFamily: "Montserrat", fontWeight: FontWeight.w800, color: Colors.blueAccent),
         ),
@@ -67,21 +67,24 @@ class BillImageText extends StatelessWidget {
             children: [
               Flexible(
                 flex: 7,
-                child: Text(
-                  element.dispname!,
-                  maxLines: 2,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontFamily: "Montserrat",
-                    fontWeight: FontWeight.w800,
-                      overflow: TextOverflow.ellipsis,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+                  child: Text(
+                    element.dispname!,
+                    maxLines: 2,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontFamily: "Montserrat",
+                      fontWeight: FontWeight.w800,
+                        overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ),
               ),
               Flexible(
                 flex: 3,
                 child: Text(
-                  'порц. ${element.quantity}',
+                  'порц. ${element.quantity}  ',
                   style: const TextStyle(fontSize: 16, fontFamily: "Montserrat", fontWeight: FontWeight.w800),
                 ),
               )
@@ -99,7 +102,7 @@ class BillImageText extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   const Icon(Icons.edit_note_sharp),
-                  Text(element3.dispname!,
+                  Text('${element3.dispname!}  ',
                       style: const TextStyle(
                           fontSize: 16,
                           fontFamily: "Montserrat",
@@ -119,6 +122,7 @@ class BillImageText extends StatelessWidget {
           for (var element5 in compList) {
             listsOfWidgets.add(
               Row(mainAxisSize: MainAxisSize.min, mainAxisAlignment: MainAxisAlignment.start, children: [
+                const Text('  '),
                 const Icon(Icons.check_outlined),
                 Text(element5.dispname!,
                     style: const TextStyle(

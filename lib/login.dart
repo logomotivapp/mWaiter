@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:package_info/package_info.dart';
 import 'package:restismob/screens/PreBillsList.dart';
-import 'package:restismob/screens/Settings.dart';
+import 'package:restismob/screens/SettingsR.dart';
 import 'package:restismob/widgets/myFloatingButton.dart';
 
 import 'global.dart';
@@ -46,7 +46,7 @@ class Login extends ConsumerWidget {
       actions: [
         IconButton(
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => Settings()));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => SettingsR(canEdit: true ,)));
             },
             icon: const Icon(Icons.settings))
       ],
