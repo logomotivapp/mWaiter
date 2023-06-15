@@ -50,20 +50,45 @@ class _TablesTableItemState extends State<TablesTableItem> {
                 global.isSnackbarActive = true;
                 backColor = const Color(0xffB5F4B3);
                 ScaffoldMessenger.of(context)
-                    .showSnackBar(SnackBar(
-                      content: Text(
-                        'Выбран стол № ${widget.tableNumber}',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontFamily: "Montserrat",
-                          fontWeight: FontWeight.bold,
+                    .showSnackBar(
+                      SnackBar(
+                        behavior: SnackBarBehavior.floating,
+                        elevation: 0,
+                        backgroundColor: Colors.transparent,
+                        content: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.black87,
+                            borderRadius: BorderRadius.circular(30),
+                            border: Border.all(color: const Color(0xffE4E4E4), width: 3),),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Text(
+                                'Выбран стол № ${widget.tableNumber}',
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontFamily: "Roboto",
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () => newBill(),
+                                child: const Text(
+                                  'ПРОДОЛЖИТЬ',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontFamily: "Roboto",
+                                    fontWeight: FontWeight.w500,
+                                    color: Color(0xffB4F4B3)
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
                         ),
                       ),
-                      action: SnackBarAction(
-                        label: 'ПРОДОЛЖИТЬ',
-                        onPressed: newBill,
-                      ),
-                    ))
+                    )
                     .closed
                     .then((value) => setState(() {
                           backColor = const Color(0xffffffff);

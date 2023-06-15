@@ -17,6 +17,7 @@ class BillListPage extends HookWidget {
     return Scaffold(
       backgroundColor: const Color(0xffEDF0F1),
       body: GridView.count(
+        padding: const EdgeInsets.fromLTRB(8, 0, 8, 100),
         childAspectRatio: 162/184,
         crossAxisCount: 2,
         children: <Widget>[..._listado(context, bills)],
@@ -24,9 +25,9 @@ class BillListPage extends HookWidget {
       floatingActionButton: MyFloatingBunnon(
         width: 245,
         height: 48,
-        borderColor: 0xff6b738e,
-        fontColor: 0xff6b738e,
-        backColor: 0xffEDF0F1,
+        borderColor: 0xff68A3AB,
+        fontColor: 0xffFFFFFF,
+        backColor: 0xff68A3AB,
         text: "Выбрать стол",
         onPress: () async {
           //await _toTableList();

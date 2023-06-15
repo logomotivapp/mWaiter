@@ -71,7 +71,7 @@ class MenuListRegularState extends State<MenuListRegular> {
                         icon: global.ifLineInLines(widget.listOfLines[index].idware!, widget.guestNumber)
                             ? const Icon(
                                 Icons.check_circle,
-                                color: Color(0xff1A69A3),
+                                color: Color(0xff1CE192),
                               )
                             : (widget.listOfLines[index].quantity! < 0
                                 ? const Icon(Icons.block, color: Colors.red)
@@ -79,6 +79,7 @@ class MenuListRegularState extends State<MenuListRegular> {
                         onPressed: () {
                           if (widget.listOfLines[index].quantity! < 0) {
                             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                              behavior: SnackBarBehavior.floating,
                                 backgroundColor: Colors.redAccent,
                                 content: Text(
                                   'Бдюдо в стоп листе',
@@ -102,6 +103,7 @@ class MenuListRegularState extends State<MenuListRegular> {
                                   global.currentBill.root!.billHead!.head!.guestscount = value[2];
                                 }
                                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                  behavior: SnackBarBehavior.floating,
                                     backgroundColor: Colors.black54,
                                     content: Text(
                                       'Добавлено блюдо \n${widget.listOfLines[index].dispname!} \n порций ${widget.listOfLines[index].quantity} курс ${widget.listOfLines[index].norder}',

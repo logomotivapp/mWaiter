@@ -63,10 +63,11 @@ class PreBillListHome extends ConsumerState<PreBillList> with WidgetsBindingObse
     global.srvIdLine = 0;
     var appBar = AppBar(
       backgroundColor: const Color(0xff68a3ab),
-      centerTitle: true,
+      toolbarHeight: 96,
+      //centerTitle: true,
       leading: PopupMenuButton(
           icon: const Icon(Icons.menu_sharp),
-          onSelected:(String item){
+          onSelected: (String item) {
             if (item.contains('/manr')) {
               Navigator.of(context).maybePop();
             }
@@ -75,21 +76,26 @@ class PreBillListHome extends ConsumerState<PreBillList> with WidgetsBindingObse
                 context,
                 MaterialPageRoute(
                     builder: (context) => const MenuWithTab(
-                      guestNum: 1,
-                      canSelect: false,
-                    )),
+                          guestNum: 1,
+                          canSelect: false,
+                        )),
               );
             }
             if (item.contains('/tabler')) {
               Navigator.push(context, MaterialPageRoute(builder: (context) => const TablesList()));
             }
             if (item.contains('/settr')) {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsR(canEdit: false,)));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const SettingsR(
+                            canEdit: false,
+                          )));
             }
           },
           itemBuilder: (BuildContext bc) {
             return [
-               PopupMenuItem(
+              PopupMenuItem(
                   value: '/manr',
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -116,8 +122,10 @@ class PreBillListHome extends ConsumerState<PreBillList> with WidgetsBindingObse
                             semanticsLabel: 'vector',
                           ),
                         ),
-                        Text(global.waiter.user!.username!, maxLines: 2,)
-
+                        Text(
+                          global.waiter.user!.username!,
+                          maxLines: 2,
+                        )
                       ]),
                     ],
                   )),
@@ -126,31 +134,44 @@ class PreBillListHome extends ConsumerState<PreBillList> with WidgetsBindingObse
                   child: Row(children: <Widget>[
                     Text('Меню'),
                     Spacer(),
-                    Icon(Icons.menu_book, color: Colors.black45,),
+                    Icon(
+                      Icons.menu_book,
+                      color: Colors.black45,
+                    ),
                   ])),
               const PopupMenuItem(
                   value: '/tabler',
                   child: Row(children: <Widget>[
                     Text('Столы'),
                     Spacer(),
-                    Icon(Icons.list, color: Colors.black45,),
+                    Icon(
+                      Icons.list,
+                      color: Colors.black45,
+                    ),
                   ])),
               const PopupMenuItem(
                   value: '/settr',
                   child: Row(children: <Widget>[
                     Text('Настройки'),
                     Spacer(),
-                    Icon(Icons.settings, color: Colors.black45,),
+                    Icon(
+                      Icons.settings,
+                      color: Colors.black45,
+                    ),
                   ])),
             ];
           }),
-      title: const Text(
-        "Заказы",
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: 22,
-          fontFamily: "Montserrat",
-          fontWeight: FontWeight.bold,
+      title: const Padding(
+        padding: EdgeInsets.fromLTRB(0, 14, 0, 0),
+        child: Text(
+          "Заказы",
+          textAlign: TextAlign.start,
+          style: TextStyle(
+            fontSize: 22,
+            height: 27/22,
+            fontFamily: "Montserrat",
+            fontWeight: FontWeight.w700,
+          ),
         ),
       ),
       actions: [
@@ -162,18 +183,31 @@ class PreBillListHome extends ConsumerState<PreBillList> with WidgetsBindingObse
             },
             icon: const Icon(Icons.refresh))
       ],
-      bottom: const TabBar(indicatorWeight: 6.0,
-          indicatorColor: Colors.white,
-          labelPadding: EdgeInsets.symmetric(horizontal: 20.0),
-          indicatorPadding: EdgeInsets.symmetric(horizontal: 20.0),
-          tabs: [
-        Tab(
-          text: 'Все',
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(20.0),
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width * 2 / 3,
+            child: const TabBar(
+                indicatorWeight: 6.0,
+                indicatorColor: Colors.white,
+                indicatorSize: TabBarIndicatorSize.tab,
+                labelStyle: TextStyle(fontFamily: 'Montserrat',
+                  fontSize: 14,
+                  letterSpacing: 0,
+                  fontWeight: FontWeight.w700,),
+                tabs: [
+                  Tab(
+                    text: 'Все',
+                  ),
+                  Tab(
+                    text: 'Мои',
+                  )
+                ]),
+          ),
         ),
-        Tab(
-          text: 'Мои',
-        )
-      ]),
+      ),
     );
     return FocusDetector(
       onVisibilityGained: () {

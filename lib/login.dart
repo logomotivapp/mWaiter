@@ -36,7 +36,7 @@ class Login extends ConsumerWidget {
       ),
       title: const Text(
         "Введите код",
-        textAlign: TextAlign.center,
+        textAlign: TextAlign.start,
         style: TextStyle(
           fontSize: 22,
           fontFamily: "Montserrat",
@@ -46,7 +46,7 @@ class Login extends ConsumerWidget {
       actions: [
         IconButton(
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => SettingsR(canEdit: true ,)));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsR(canEdit: true ,)));
             },
             icon: const Icon(Icons.settings))
       ],

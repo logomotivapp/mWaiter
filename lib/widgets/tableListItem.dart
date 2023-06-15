@@ -56,7 +56,7 @@ class _PopupMenuItemState extends State<TableItem> {
             child: Column(
               children: [
                 Flexible(
-                  flex: 43,
+                  flex: 42,
                   child: Container(
                     decoration: BoxDecoration(
                         color: Color(widget.hColor),
@@ -92,8 +92,9 @@ class _PopupMenuItemState extends State<TableItem> {
                                 style: const TextStyle(
                                   color: Colors.black45,
                                   fontSize: 10,
-                                  fontFamily: "Montserrat",
-                                  fontWeight: FontWeight.w800,
+                                  height: 12/10,
+                                  fontFamily: "Roboto",
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
 
@@ -103,7 +104,10 @@ class _PopupMenuItemState extends State<TableItem> {
                                 textAlign: TextAlign.right,
                                 style: const TextStyle(
                                   color: Color(0xb2000000),
+                                  fontFamily: "Roboto",
                                   fontSize: 12,
+                                  height: 14/12,
+                                  fontWeight: FontWeight.w400,
                                 ),
                               ),
                             ],
@@ -114,7 +118,7 @@ class _PopupMenuItemState extends State<TableItem> {
                   ),
                 ),
                 Flexible(
-                  flex: 120,
+                  flex: 132,
                   child: Padding(
                     padding: const EdgeInsets.all(5.0),
                     child: Container(
@@ -129,7 +133,7 @@ class _PopupMenuItemState extends State<TableItem> {
                 ),
                 const Divider(),
                 Flexible(
-                  flex: 30,
+                  flex: 24,
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                     child: Row(
@@ -280,39 +284,44 @@ class LineImg extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        const SizedBox(
-          width: 5,
-        ),
-        Text(
-          line.quantity == '0' ? ' ' : '${double.parse(line.quantity!).toStringAsFixed(0)}\n',
-          style: const TextStyle(
-              color: Color(0xb2000000),
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              overflow: TextOverflow.ellipsis),
-        ),
-        const SizedBox(
-          width: 5,
-        ),
-        SizedBox(
-          width: 120,
-          height: 26.89,
-          child: Text(
-            line.dispname!,
-            textAlign: TextAlign.start,
-            maxLines: 2,
+    return SizedBox(
+      height: 26.89,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          const SizedBox(
+            width: 5,
+          ),
+          Text(
+            line.quantity == '0' ? ' ' : '${double.parse(line.quantity!).toStringAsFixed(0)}\n',
             style: const TextStyle(
                 color: Color(0xb2000000),
                 fontSize: 12,
-                fontWeight: FontWeight.w700,
+                height: 15/12,
+                fontWeight: FontWeight.w500,
                 overflow: TextOverflow.ellipsis),
           ),
-        ),
-      ],
+          const SizedBox(
+            width: 5,
+          ),
+          SizedBox(
+            width: 120,
+            height: 26.89,
+            child: Text(
+              line.dispname!,
+              textAlign: TextAlign.start,
+              maxLines: 2,
+              style: const TextStyle(
+                  color: Color(0xb2000000),
+                  fontSize: 12,
+                  height: 14/12,
+                  fontWeight: FontWeight.w400,
+                  overflow: TextOverflow.ellipsis),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

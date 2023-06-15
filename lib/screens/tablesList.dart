@@ -17,7 +17,8 @@ class TablesList extends HookWidget {
   Widget build(BuildContext context) {
     var appBar = AppBar(
       backgroundColor: const Color(0xff6C0A39),
-      centerTitle: true,
+      toolbarHeight: 96,
+      // centerTitle: true,
       leading: InkWell(
         onTap: () {
           //global.navKey.currentState!.pop();
@@ -33,19 +34,40 @@ class TablesList extends HookWidget {
         textAlign: TextAlign.center,
         style: TextStyle(
           fontSize: 22,
+          height: 27/22,
+          color: Colors.white,
           fontFamily: "Montserrat",
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w500,
         ),
       ),
-      bottom: const TabBar(indicatorWeight: 6.0, indicatorColor: Colors.white,
-          tabs: [
-        Tab(
-          text: 'Все',
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(20.0),
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width * 2 / 3,
+            child: const TabBar(
+                indicatorWeight: 6.0,
+                indicatorColor: Color(0xffFF1D89),
+                indicatorSize: TabBarIndicatorSize.tab,
+                labelStyle: TextStyle(
+                  fontFamily: 'Montserrat',
+                  fontSize: 13,
+                  height: 16/14,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+                tabs: [
+                  Tab(
+                    text: 'Все',
+                  ),
+                  Tab(
+                    text: 'Свободные',
+                  )
+                ]),
+          ),
         ),
-        Tab(
-          text: 'Свободные',
-        )
-      ]),
+      ),
     );
     return SafeArea(
         child: DefaultTabController(
@@ -132,8 +154,7 @@ class FreeTablesList extends ConsumerWidget {
 Future<HallTable> loadHallTables(num waiterId) async {
   HallTable? hallTable;
   var dio = Dio(BaseOptions(connectTimeout: const Duration(seconds: 15)));
-  String request =
-      'http://${global.uri}/apim/GetTables?Id_Waiter=${waiterId.toString()}';
+  String request = 'http://${global.uri}/apim/GetTables?Id_Waiter=${waiterId.toString()}';
   final response = await dio.get(request);
   debugPrint(response.data!.toString());
   if (response.statusCode == 200) {
@@ -144,7 +165,6 @@ Future<HallTable> loadHallTables(num waiterId) async {
   return hallTable!;
 }
 
-AutoDisposeFutureProvider<HallTable> hallProvider =
-    FutureProvider.autoDispose<HallTable>((ref) async {
+AutoDisposeFutureProvider<HallTable> hallProvider = FutureProvider.autoDispose<HallTable>((ref) async {
   return await loadHallTables(global.waiter.user!.idcode!);
 });

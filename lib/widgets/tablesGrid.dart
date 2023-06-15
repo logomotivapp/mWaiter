@@ -16,15 +16,21 @@ class TablesGrid extends StatelessWidget {
         children: <Widget>[
           const Padding(
             padding: EdgeInsets.all(8.0),
-            child: Text(
-              'Выберите нужный стол\nдля оформления заказа:',
-              style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.black,
-                  fontFamily: 'Montserrat',
-                  letterSpacing: 0,
-                  fontWeight: FontWeight.w800,
-                  height: 1.5 /*PERCENT not supported*/),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(
+                  'Выберите нужный стол для\n оформления заказа:',
+                  textAlign: TextAlign.start,
+                  style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.black,
+                      fontFamily: 'Montserrat',
+                      letterSpacing: 0,
+                      fontWeight: FontWeight.w800,
+                      height: 1.5 /*PERCENT not supported*/),
+                ),
+              ],
             ),
           ),
           Flexible(

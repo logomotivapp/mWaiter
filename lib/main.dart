@@ -102,7 +102,7 @@ class MyHome extends StatelessWidget {
                         fontSize: 23.804527282714844,
                         letterSpacing: 0,
                         fontWeight: FontWeight.w800,
-                        height: 1.5 /*PERCENT not supported*/
+                        height: 1 /*PERCENT not supported*/
                         ),
                   )),
             )

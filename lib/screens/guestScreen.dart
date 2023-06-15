@@ -67,7 +67,7 @@ class GuestMeal extends ConsumerWidget {
 
     var appBar = AppBar(
       backgroundColor: const Color(0xff6D1064),
-      centerTitle: true,
+    //  centerTitle: true,
       leading: InkWell(
         onTap: () {
           //global.navKey.currentState!.pop();
@@ -106,7 +106,7 @@ class GuestMeal extends ConsumerWidget {
           body: Column(
             children: [
               Flexible(
-                flex: 8,
+                flex: 7,
                 child: SizedBox(
                   height: MediaQuery.of(context).size.height / 10 * 7, // Also Including Tab-bar height.
                   child: ListTileTheme(
@@ -505,126 +505,151 @@ class GuestMeal extends ConsumerWidget {
                   },
                 ),
               )),
-              Container(
-                alignment: Alignment.bottomCenter,
-                child: Center(
-                  child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                    const Icon(
-                      Icons.star,
-                      color: Colors.black38,
-                    ),
-                    TextButton(
-                        child: const Text("Избранные позиции",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontFamily: "Montserrat",
-                              color: Colors.black87,
-                              fontWeight: FontWeight.bold,
-                            )),
-                        onPressed: () {
-                          showModalBottomSheet<void>(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return SizedBox(
-                                height: MediaQuery.of(context).size.height * .45,
-                                child: Center(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: <Widget>[
-                                      Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                                        const Icon(
-                                          Icons.star,
-                                          color: Colors.black38,
-                                        ),
-                                        TextButton(
-                                            child: const Text("Избранные позиции",
-                                                style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontFamily: "Montserrat",
-                                                  color: Colors.black87,
-                                                  fontWeight: FontWeight.bold,
-                                                )),
-                                            onPressed: () => Navigator.of(context).pop()),
-                                      ]),
-                                      Flexible(
-                                        child: ListView.builder(
-                                          itemCount: poplistOfLines.length,
-                                          scrollDirection: Axis.vertical,
-                                          itemBuilder: (_, index) => Card(
-                                            margin: const EdgeInsets.all(5),
-                                            child: ListTile(
-                                                title: Text(poplistOfLines[index].dispname!,
-                                                    style: const TextStyle(
-                                                      color: Colors.black45,
-                                                      fontSize: 14,
-                                                      fontFamily: "Montserrat",
-                                                      fontWeight: FontWeight.w800,
-                                                    )),
-                                                //  subtitle: Text(_items[index]['subtitle']),
-                                                trailing: IconButton(
-                                                  icon: global.ifLineInLines(
-                                                          poplistOfLines[index].idware!, guestNumber)
-                                                      ? const Icon(
-                                                          Icons.check_circle,
-                                                          color: Color(0xff1A69A3),
-                                                        )
-                                                      : (poplistOfLines[index].quantity! < 0
-                                                          ? const Icon(Icons.block, color: Colors.red)
-                                                          : const Icon(Icons.add_circle_outline)),
-                                                  onPressed: () {
-                                                    if (poplistOfLines[index].quantity! < 0) {
-                                                      ScaffoldMessenger.of(context)
-                                                          .showSnackBar(const SnackBar(
-                                                              backgroundColor: Colors.redAccent,
-                                                              content: Text(
-                                                                'Бдюдо в стоп листе',
-                                                                style: TextStyle(
-                                                                  fontSize: 18,
-                                                                ),
-                                                                textAlign: TextAlign.center,
-                                                              )));
-                                                    } else {
-                                                      showDialog(
-                                                              builder: (_) => QoAlert(
-                                                                  guest: guestNumber,
-                                                                  ware: poplistOfLines[index].dispname!),
-                                                              context: context)
-                                                          .then((value) {
-                                                        if (value != null) {
-                                                          global.addNewLine(poplistOfLines[index], value[2],
-                                                              value[0], value[1], context);
-                                                          if (value[2] >
-                                                              global.currentBill.root!.billHead!.head!
-                                                                  .guestscount) {
-                                                            global.currentBill.root!.billHead!.head!
-                                                                .guestscount = value[2];
-                                                          }
-                                                          ref.invalidate(listGuestProvider);
-                                                          Navigator.of(context).pop();
-                                                          if (listScrollController.hasClients) {
-                                                            final position =
-                                                                listScrollController.position.maxScrollExtent;
-                                                            listScrollController.jumpTo(position);
-                                                          }
-                                                        }
-                                                      });
-                                                    }
-                                                  },
-                                                )),
+              Flexible(
+                child: SizedBox(
+                  height: 52.12,
+                  child: Container(
+                    alignment: Alignment.bottomCenter,
+                    child: Wrap(
+                      spacing: 0,
+                      children: [
+                        const Center(
+                          child: Padding(
+                            padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                            child: SizedBox(
+                              width: 58.66,
+                              height: 3,
+                              child: Divider(
+                                thickness: 3,
+                                color: Color(0xffCFD5EA),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Center(
+                          child: Row(mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                            const Icon(
+                              Icons.star,
+                              color: Colors.black38,
+                            ),
+                            TextButton(
+                                child: const Text("Избранные позиции",
+                                    style: TextStyle(
+                                      height: 0.7,
+                                      fontSize: 16,
+                                      fontFamily: "Montserrat",
+                                      color: Colors.black87,
+                                      fontWeight: FontWeight.bold,
+                                    )),
+                                onPressed: () {
+                                  showModalBottomSheet<void>(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return SizedBox(
+                                        height: MediaQuery.of(context).size.height * .45,
+                                        child: Center(
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: <Widget>[
+                                              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                                                const Icon(
+                                                  Icons.star,
+                                                  color: Colors.black38,
+                                                ),
+                                                TextButton(
+                                                    child: const Text("Избранные позиции",
+                                                        style: TextStyle(
+                                                          fontSize: 16,
+                                                          fontFamily: "Montserrat",
+                                                          color: Colors.black87,
+                                                          fontWeight: FontWeight.bold,
+                                                        )),
+                                                    onPressed: () => Navigator.of(context).pop()),
+                                              ]),
+                                              Flexible(
+                                                child: ListView.builder(
+                                                  itemCount: poplistOfLines.length,
+                                                  scrollDirection: Axis.vertical,
+                                                  itemBuilder: (_, index) => Card(
+                                                    margin: const EdgeInsets.all(5),
+                                                    child: ListTile(
+                                                        title: Text(poplistOfLines[index].dispname!,
+                                                            style: const TextStyle(
+                                                              color: Colors.black45,
+                                                              fontSize: 14,
+                                                              fontFamily: "Montserrat",
+                                                              fontWeight: FontWeight.w800,
+                                                            )),
+                                                        //  subtitle: Text(_items[index]['subtitle']),
+                                                        trailing: IconButton(
+                                                          icon: global.ifLineInLines(
+                                                                  poplistOfLines[index].idware!, guestNumber)
+                                                              ? const Icon(
+                                                                  Icons.check_circle,
+                                                                  color: Color(0xff1A69A3),
+                                                                )
+                                                              : (poplistOfLines[index].quantity! < 0
+                                                                  ? const Icon(Icons.block, color: Colors.red)
+                                                                  : const Icon(Icons.add_circle_outline)),
+                                                          onPressed: () {
+                                                            if (poplistOfLines[index].quantity! < 0) {
+                                                              ScaffoldMessenger.of(context)
+                                                                  .showSnackBar(const SnackBar(
+                                                                      backgroundColor: Colors.redAccent,
+                                                                      content: Text(
+                                                                        'Бдюдо в стоп листе',
+                                                                        style: TextStyle(
+                                                                          fontSize: 18,
+                                                                        ),
+                                                                        textAlign: TextAlign.center,
+                                                                      )));
+                                                            } else {
+                                                              showDialog(
+                                                                      builder: (_) => QoAlert(
+                                                                          guest: guestNumber,
+                                                                          ware: poplistOfLines[index].dispname!),
+                                                                      context: context)
+                                                                  .then((value) {
+                                                                if (value != null) {
+                                                                  global.addNewLine(poplistOfLines[index], value[2],
+                                                                      value[0], value[1], context);
+                                                                  if (value[2] >
+                                                                      global.currentBill.root!.billHead!.head!
+                                                                          .guestscount) {
+                                                                    global.currentBill.root!.billHead!.head!
+                                                                        .guestscount = value[2];
+                                                                  }
+                                                                  ref.invalidate(listGuestProvider);
+                                                                  Navigator.of(context).pop();
+                                                                  if (listScrollController.hasClients) {
+                                                                    final position =
+                                                                        listScrollController.position.maxScrollExtent;
+                                                                    listScrollController.jumpTo(position);
+                                                                  }
+                                                                }
+                                                              });
+                                                            }
+                                                          },
+                                                        )),
+                                                  ),
+                                                ),
+                                                //ListForSelectWares(
+                                                // listOfLines: listOfLines, gnumber: gnumber,)
+                                              ),
+                                            ],
                                           ),
                                         ),
-                                        //ListForSelectWares(
-                                        // listOfLines: listOfLines, gnumber: gnumber,)
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
-                          );
-                        })
-                  ]),
+                                      );
+                                    },
+                                  );
+                                })
+                          ]),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ],
