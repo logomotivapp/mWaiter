@@ -356,6 +356,7 @@ class MenuWithTabHome extends State<MenuWithTab> with TickerProviderStateMixin, 
                     builder: (context) => ComplexList(
                           listComplexHead: listComplexHead,
                           guestNum: widget.guestNum,
+                          canSelect: widget.canSelect,
                         )));
           } else {
             setState(() {

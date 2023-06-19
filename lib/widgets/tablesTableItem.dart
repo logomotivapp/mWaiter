@@ -32,17 +32,18 @@ class _TablesTableItemState extends State<TablesTableItem> {
       height: 60,
       width: 60,
       child: Container(
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(5), color: backColor, boxShadow: const [
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(5), color: backColor, boxShadow:  const [
           BoxShadow(
-            color: Colors.grey,
-            blurRadius: 3.0, // soften the shadow
-            spreadRadius: 2.0, //extend the shadow
+            color: Colors.black26,
+            blurRadius: 4.0, // soften the shadow
+           // spreadRadius: 4.0, //extend the shadow
+            offset: Offset(0,4),
           )
         ]),
         child: TextButton(
           child: Text(
             widget.tableNumber.toString(),
-            style: TextStyle(fontSize: 14, color: fontColor),
+            style: TextStyle(fontSize: 14, color: fontColor, fontWeight: FontWeight.w800),
           ),
           onPressed: () {
             if (!global.isSnackbarActive) {
@@ -111,9 +112,10 @@ class _TablesTableItemState extends State<TablesTableItem> {
             '{"Head" : {"ID_WAITER":${global.waiter.user!.idcode},"TABLE_NUMBER":${widget.tableNumber},"GUESTS_COUNT":1}}');
     debugPrint(response.data!.toString());
     if (response.statusCode == 200) {
+      closeSnackBars();
       getBill = GetBill.fromJson(response.data);
       if (getBill.root!.msgStatus!.msg!.idStatus == 0) {
-        if (getBill.root!.billHead!.head!.idcode == -1) {
+        if (getBill.root!.billHead!.head!.idcode! < 0) {
           global.currentBill = getBill;
         }
         goToBill(getBill.root!.billHead!.head!.idcode!);
@@ -123,6 +125,10 @@ class _TablesTableItemState extends State<TablesTableItem> {
     } else {
       goMsg('Ошибка подключения');
     }
+  }
+
+  void closeSnackBars(){
+    ScaffoldMessenger.of(context).clearSnackBars();
   }
 
   void goMsg(String msg) {

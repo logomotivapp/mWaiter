@@ -45,24 +45,24 @@ class TablesList extends HookWidget {
         child: Align(
           alignment: Alignment.centerLeft,
           child: SizedBox(
-            width: MediaQuery.of(context).size.width * 2 / 3,
+            width: MediaQuery.of(context).size.width * 2 / 3 + 30,
             child: const TabBar(
                 indicatorWeight: 6.0,
                 indicatorColor: Color(0xffFF1D89),
                 indicatorSize: TabBarIndicatorSize.tab,
                 labelStyle: TextStyle(
                   fontFamily: 'Montserrat',
-                  fontSize: 13,
+                  fontSize: 14,
                   height: 16/14,
                   color: Colors.white,
                   fontWeight: FontWeight.w700,
                 ),
                 tabs: [
                   Tab(
-                    text: 'Все',
+                    text: 'ВСЕ',
                   ),
                   Tab(
-                    text: 'Свободные',
+                    text: 'СВОБОДНЫЕ',
                   )
                 ]),
           ),

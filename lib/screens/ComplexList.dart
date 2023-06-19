@@ -9,14 +9,16 @@ import 'BillImageText.dart';
 class ComplexList extends StatefulWidget {
   final List<MenuHead> listComplexHead;
   final int guestNum;
+  final bool canSelect;
 
-  const ComplexList({super.key, required this.listComplexHead, required this.guestNum});
+  const ComplexList({super.key, required this.listComplexHead, required this.guestNum, required this.canSelect});
 
   @override
   State<ComplexList> createState() => ComplexListState();
 }
 
 class ComplexListState extends State<ComplexList> with WidgetsBindingObserver{
+  @override
   initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
@@ -101,7 +103,8 @@ class ComplexListState extends State<ComplexList> with WidgetsBindingObserver{
                     fontWeight: FontWeight.w800,
                   )),
               //  subtitle: Text(_items[index]['subtitle']),
-              trailing: IconButton(
+              trailing: widget.canSelect
+              ?IconButton(
                 onPressed: () {
                   Navigator.push(
                     context,
@@ -114,9 +117,10 @@ class ComplexListState extends State<ComplexList> with WidgetsBindingObserver{
                   ).then((value){ setState(() { });});
                 },
                 icon: global.ifLineInLines(widget.listComplexHead[index].idcode!, widget.guestNum)
-                    ? const Icon(Icons.check_circle, color: Color(0xff1A69A3))
+                    ? const Icon(Icons.check_circle, color: Color(0xff1CE192))
                     : const Icon(Icons.add_circle_outline),
-              ),
+              )
+              :const Text(' '),
             ),
           ),
         ),

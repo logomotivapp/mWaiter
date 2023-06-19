@@ -199,10 +199,10 @@ class PreBillListHome extends ConsumerState<PreBillList> with WidgetsBindingObse
                   fontWeight: FontWeight.w700,),
                 tabs: [
                   Tab(
-                    text: 'Все',
+                    text: 'ВСЕ',
                   ),
                   Tab(
-                    text: 'Мои',
+                    text: 'МОИ',
                   )
                 ]),
           ),
