@@ -7,7 +7,9 @@ class MenuHead {
       this.menudate, 
       this.summamenu, 
       this.idtype, 
-      this.menuLine,});
+      this.menuLine,
+      this.color = 0,
+  });
 
   MenuHead.fromJson(dynamic json) {
     idcode = json['ID_CODE'];
@@ -28,6 +30,7 @@ class MenuHead {
   double? summamenu;
   String? idtype;
   List<MenuLine>? menuLine;
+  int? color;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};

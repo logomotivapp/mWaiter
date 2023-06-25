@@ -60,7 +60,7 @@ class PreBillListHome extends ConsumerState<PreBillList> with WidgetsBindingObse
     int percent = ref.watch(global.percentProvider);
     var menuStructure = ref.watch(menuProvider);
     ref.watch(feaProvider);
-    global.srvIdLine = 0;
+   // global.srvIdLine = 0;
     var appBar = AppBar(
       backgroundColor: const Color(0xff68a3ab),
       toolbarHeight: 96,
@@ -211,6 +211,10 @@ class PreBillListHome extends ConsumerState<PreBillList> with WidgetsBindingObse
     );
     return FocusDetector(
       onVisibilityGained: () {
+        ref.invalidate(listProvider);
+        ref.invalidate(feaProvider);
+      },
+      onVisibilityLost: () {
         ref.invalidate(listProvider);
         ref.invalidate(feaProvider);
       },

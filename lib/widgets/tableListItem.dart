@@ -92,7 +92,7 @@ class _PopupMenuItemState extends State<TableItem> {
                                 style: const TextStyle(
                                   color: Colors.black45,
                                   fontSize: 10,
-                                  height: 12/10,
+                                  height: 12 / 10,
                                   fontFamily: "Roboto",
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -106,7 +106,7 @@ class _PopupMenuItemState extends State<TableItem> {
                                   color: Color(0xb2000000),
                                   fontFamily: "Roboto",
                                   fontSize: 12,
-                                  height: 14/12,
+                                  height: 14 / 12,
                                   fontWeight: FontWeight.w400,
                                 ),
                               ),
@@ -183,8 +183,10 @@ class _PopupMenuItemState extends State<TableItem> {
                             builder: (context) => CurrentBill(widget.bill.idcode!),
                             settings: const RouteSettings(name: "/currentbill")))
                     .then((value) {
-                  widget.bill.guestscount = global.currentBill.root!.billHead!.head!.guestscount!;
-                  widget.bill.amount = global.currentBill.root!.billHead!.head!.amount!;
+                  if (global.currentBill.root!.billHead!.head != null && global.currentBill.root!.msgStatus!.msg!.idStatus != -1 ) {
+                    widget.bill.guestscount = global.currentBill.root!.billHead!.head!.guestscount!;
+                    widget.bill.amount = global.currentBill.root!.billHead!.head!.amount!;
+                  }
                   setState(() {});
                 });
               }
@@ -298,7 +300,7 @@ class LineImg extends StatelessWidget {
             style: const TextStyle(
                 color: Color(0xb2000000),
                 fontSize: 12,
-                height: 15/12,
+                height: 15 / 12,
                 fontWeight: FontWeight.w500,
                 overflow: TextOverflow.ellipsis),
           ),
@@ -315,7 +317,7 @@ class LineImg extends StatelessWidget {
               style: const TextStyle(
                   color: Color(0xb2000000),
                   fontSize: 12,
-                  height: 14/12,
+                  height: 14 / 12,
                   fontWeight: FontWeight.w400,
                   overflow: TextOverflow.ellipsis),
             ),

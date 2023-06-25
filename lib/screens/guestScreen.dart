@@ -67,7 +67,7 @@ class GuestMeal extends ConsumerWidget {
 
     var appBar = AppBar(
       backgroundColor: const Color(0xff6D1064),
-    //  centerTitle: true,
+      //  centerTitle: true,
       leading: InkWell(
         onTap: () {
           //global.navKey.currentState!.pop();
@@ -307,63 +307,67 @@ class GuestMeal extends ConsumerWidget {
                                               }
                                             }
                                             if (item.contains('cond')) {
-                                              BillCondiment bc;
-                                              Condiment sc;
-                                              showDialog(
-                                                      builder: (_) => CondAlert(
-                                                            condiments: global
-                                                                .menuStructure.menus!.condiments!.condiment!,
-                                                            group: listOfLines[index].group,
-                                                          ),
-                                                      context: context)
-                                                  .then((value) => {
-                                                        if (value != null)
-                                                          {
-                                                            bc = BillCondiment(),
-                                                            sc = value,
-                                                            global.srvIdLine--,
-                                                            bc.pkid = global.srvIdLine,
-                                                            bc.idline = listOfLines[index].idline,
-                                                            bc.idware = listOfLines[index].idware,
-                                                            bc.idfware = sc.idfware,
-                                                            bc.idcode = sc.idcode,
-                                                            bc.idfgroup = sc.idfgroup,
-                                                            bc.dispname = sc.dispname,
-                                                            bc.idbill = listOfLines[index].idbill,
-                                                            bc.idcondiment = sc.idcode,
-                                                            global
-                                                                .currentBill.root!.billCondiments!.condiment!
-                                                                .add(bc),
-                                                            ref.invalidate(listGuestProvider),
-                                                          }
-                                                      });
+                                              if (markS) {
+                                                BillCondiment bc;
+                                                Condiment sc;
+                                                showDialog(
+                                                        builder: (_) => CondAlert(
+                                                              condiments: global.menuStructure.menus!
+                                                                  .condiments!.condiment!,
+                                                              group: listOfLines[index].group,
+                                                            ),
+                                                        context: context)
+                                                    .then((value) => {
+                                                          if (value != null)
+                                                            {
+                                                              bc = BillCondiment(),
+                                                              sc = value,
+                                                              global.srvIdLine--,
+                                                              bc.pkid = global.srvIdLine,
+                                                              bc.idline = listOfLines[index].idline,
+                                                              bc.idware = listOfLines[index].idware,
+                                                              bc.idfware = sc.idfware,
+                                                              bc.idcode = sc.idcode,
+                                                              bc.idfgroup = sc.idfgroup,
+                                                              bc.dispname = sc.dispname,
+                                                              bc.idbill = listOfLines[index].idbill,
+                                                              bc.idcondiment = sc.idcode,
+                                                              global.currentBill.root!.billCondiments!
+                                                                  .condiment!
+                                                                  .add(bc),
+                                                              ref.invalidate(listGuestProvider),
+                                                            }
+                                                        });
+                                              }
                                             }
                                             if (item.contains('message')) {
-                                              BillCondiment bc;
-                                              showDialog(
-                                                      builder: (_) => const TextInputAlert(
-                                                            title: 'Введите комментарий',
-                                                          ),
-                                                      context: context)
-                                                  .then((value) => {
-                                                        if (value != null)
-                                                          {
-                                                            bc = BillCondiment(),
-                                                            global.srvIdLine--,
-                                                            bc.pkid = global.srvIdLine,
-                                                            bc.idline = listOfLines[index].idline,
-                                                            bc.idware = listOfLines[index].idware,
-                                                            bc.idfware = -1,
-                                                            bc.idcode = -1,
-                                                            bc.idfgroup = -1,
-                                                            bc.dispname = value,
-                                                            bc.idbill = listOfLines[index].idbill,
-                                                            bc.idcondiment = -1,
-                                                            global
-                                                                .currentBill.root!.billCondiments!.condiment!
-                                                                .add(bc),
-                                                          }
-                                                      });
+                                              if (markS) {
+                                                BillCondiment bc;
+                                                showDialog(
+                                                        builder: (_) => const TextInputAlert(
+                                                              title: 'Введите комментарий',
+                                                            ),
+                                                        context: context)
+                                                    .then((value) => {
+                                                          if (value != null)
+                                                            {
+                                                              bc = BillCondiment(),
+                                                              global.srvIdLine--,
+                                                              bc.pkid = global.srvIdLine,
+                                                              bc.idline = listOfLines[index].idline,
+                                                              bc.idware = listOfLines[index].idware,
+                                                              bc.idfware = 0,
+                                                              bc.idcode = -1,
+                                                              bc.idfgroup = -1,
+                                                              bc.dispname = value,
+                                                              bc.idbill = listOfLines[index].idbill,
+                                                              bc.idcondiment = -1,
+                                                              global.currentBill.root!.billCondiments!
+                                                                  .condiment!
+                                                                  .add(bc),
+                                                            }
+                                                        });
+                                              }
                                             }
                                             if (item.contains('complite')) {
                                               listOfLines[index].iscomplited = 1;
@@ -527,8 +531,7 @@ class GuestMeal extends ConsumerWidget {
                           ),
                         ),
                         Center(
-                          child: Row(mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
+                          child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                             const Icon(
                               Icons.star,
                               color: Colors.black38,
@@ -609,12 +612,13 @@ class GuestMeal extends ConsumerWidget {
                                                               showDialog(
                                                                       builder: (_) => QoAlert(
                                                                           guest: guestNumber,
-                                                                          ware: poplistOfLines[index].dispname!),
+                                                                          ware: poplistOfLines[index]
+                                                                              .dispname!),
                                                                       context: context)
                                                                   .then((value) {
                                                                 if (value != null) {
-                                                                  global.addNewLine(poplistOfLines[index], value[2],
-                                                                      value[0], value[1], context);
+                                                                  global.addNewLine(poplistOfLines[index],
+                                                                      value[2], value[0], value[1], context);
                                                                   if (value[2] >
                                                                       global.currentBill.root!.billHead!.head!
                                                                           .guestscount) {
@@ -622,10 +626,10 @@ class GuestMeal extends ConsumerWidget {
                                                                         .guestscount = value[2];
                                                                   }
                                                                   ref.invalidate(listGuestProvider);
-                                                                  Navigator.of(context).pop();
+                                                                  //  Navigator.of(context).pop();
                                                                   if (listScrollController.hasClients) {
-                                                                    final position =
-                                                                        listScrollController.position.maxScrollExtent;
+                                                                    final position = listScrollController
+                                                                        .position.maxScrollExtent;
                                                                     listScrollController.jumpTo(position);
                                                                   }
                                                                 }

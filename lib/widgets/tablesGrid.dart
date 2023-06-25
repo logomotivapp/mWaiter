@@ -20,7 +20,7 @@ class TablesGrid extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(
-                  'Выберите нужный стол для\n оформления заказа:',
+                  'Выберите нужный стол для\nоформления заказа:',
                   textAlign: TextAlign.start,
                   style: TextStyle(
                       fontSize: 14,

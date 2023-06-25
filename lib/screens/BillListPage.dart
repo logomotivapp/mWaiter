@@ -15,6 +15,7 @@ class BillListPage extends HookWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       backgroundColor: const Color(0xffEDF0F1),
       body: GridView.count(
         padding: const EdgeInsets.fromLTRB(8, 0, 8, 100),

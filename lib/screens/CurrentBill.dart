@@ -8,6 +8,7 @@ import 'package:restismob/models/GetBill.dart';
 import 'package:restismob/models/localTypes/LoadingIndicatorDialog.dart';
 import 'package:restismob/screens/guestScreen.dart';
 
+import '../models/Line.dart';
 import '../widgets/myProgressIndicator.dart';
 import 'BillImageText.dart';
 
@@ -60,6 +61,8 @@ class _CurrentBillState extends ConsumerState<CurrentBill> with WidgetsBindingOb
   void didChangeAppLifecycleState(AppLifecycleState state) {
     switch (state) {
       case AppLifecycleState.paused:
+        global.currentBill.root!.msgStatus!.msg!.idStatus = 0;
+        delEmpty();
         var result = global.saveCurrentBill();
         result.then((value) => {Navigator.popUntil(context, (route) => route.settings.name == "/prebills")});
         break;
@@ -67,6 +70,19 @@ class _CurrentBillState extends ConsumerState<CurrentBill> with WidgetsBindingOb
       case AppLifecycleState.resumed:
       case AppLifecycleState.detached:
         break;
+    }
+  }
+
+  void delEmpty(){
+    List<Line> ll = [];
+    if (global.currentBill.root!.billLines!.line != null) {
+      ll.addAll(global.currentBill.root!.billLines!.line!.where((element) => element.quantity == 0));
+      if (global.currentBill.root!.billCondiments!.condiment != null){
+        for (var element1 in ll) {
+          global.currentBill.root!.billCondiments!.condiment!.removeWhere((element2) => element2.idline == element1.idline);
+        }
+      }
+      global.currentBill.root!.billLines!.line!.removeWhere((element) => element.quantity == 0);
     }
   }
 
@@ -106,12 +122,13 @@ class _CurrentBillState extends ConsumerState<CurrentBill> with WidgetsBindingOb
       ),
     );
 
+    ScrollController scrollController = ScrollController();
+
     return WillPopScope(
       onWillPop: () async {
-        if (global.currentBill.root!.billLines!.line != null) {
-          global.currentBill.root!.billLines!.line!.removeWhere((element) => element.quantity == 0);
-        }
+        delEmpty();
         global.currentBill.root!.billHead!.head!.amount = global.currentBill.billSumm();
+        global.currentBill.root!.msgStatus!.msg!.idStatus = 0;
         LoadingIndicatorDialog().show(context);
         var result = global.saveCurrentBill();
         result.then((value) => {
@@ -162,56 +179,65 @@ class _CurrentBillState extends ConsumerState<CurrentBill> with WidgetsBindingOb
                           tileColor: const Color(0xffEDF0F1),
                           style: ListTileStyle.list,
                           dense: true,
-                          child: ListView.builder(
-                            itemCount: items.length,
-                            itemBuilder: (_, index) => Card(
-                              margin: const EdgeInsets.all(5),
-                              child: ListTile(
-                                  title: Text(items[index]['gN'],
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        fontFamily: "Montserrat",
-                                        fontWeight: FontWeight.w800,
-                                      )),
-                                  //  subtitle: Text(_items[index]['subtitle']),
-                                  trailing: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      !guestHaveLine(index + commonGuest) && ((index + commonGuest) > 1)
-                                          ? IconButton(
-                                              onPressed: () {
-                                                for (var element
-                                                    in global.currentBill.root!.billLines!.line!) {
-                                                  if (element.gnumber! > index) {
-                                                    element.gnumber = element.gnumber! - 1;
+                          child: Scrollbar(
+                            thumbVisibility: true,
+                            thickness: 10,
+                            controller: scrollController,
+                            child: ListView.builder(
+                              controller: scrollController,
+                              itemCount: items.length,
+                              itemBuilder: (_, index) => Card(
+                                margin: const EdgeInsets.all(5),
+                                child: ListTile(
+                                    title: Text(items[index]['gN'],
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          fontFamily: "Montserrat",
+                                          fontWeight: FontWeight.w800,
+                                        )),
+                                    //  subtitle: Text(_items[index]['subtitle']),
+                                    trailing: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        !guestHaveLine(index + commonGuest) && ((index + commonGuest) > 1)
+                                            ? IconButton(
+                                                onPressed: () {
+                                                  for (var element
+                                                      in global.currentBill.root!.billLines!.line!) {
+                                                    if (element.gnumber! > index) {
+                                                      element.gnumber = element.gnumber! - 1;
+                                                    }
                                                   }
-                                                }
-                                                gNs--;
-                                                currentBill.root!.billHead!.head!.guestscount = gNs;
-                                                global.ref1!.read(numGuestsProvider.notifier).state =
-                                                    global.currentBill.root!.billHead!.head!.guestscount!;
-                                              },
-                                              icon: const Icon(Icons.delete_forever_outlined))
-                                          : const Text(' '),
-                                      IconButton(
-                                        icon: const Icon(Icons.arrow_forward_ios),
-                                        onPressed: () {
-                                          Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          GuestScreen(gN: index + commonGuest),
-                                                      settings: const RouteSettings(name: "/guestscreen")))
-                                              .then((value) => {
-                                                    ref.read(amountProvider.notifier).state =
-                                                        global.currentBill.billSumm(),
-                                                    ref.read(numGuestsProvider.notifier).state =
-                                                        global.currentBill.root!.billHead!.head!.guestscount!,
-                                                  });
-                                        },
-                                      ),
-                                    ],
-                                  )),
+                                                  gNs--;
+                                                  currentBill.root!.billHead!.head!.guestscount = gNs;
+                                                  global.ref1!.read(numGuestsProvider.notifier).state =
+                                                      global.currentBill.root!.billHead!.head!.guestscount!;
+                                                },
+                                                icon: const Icon(Icons.delete_forever_outlined))
+                                            : const Text(' '),
+                                        IconButton(
+                                          icon: const Icon(Icons.arrow_forward_ios),
+                                          onPressed: () {
+                                            Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            GuestScreen(gN: index + commonGuest),
+                                                        settings: const RouteSettings(name: "/guestscreen")))
+                                                .then((value) => {
+                                                      if (global.currentBill.root!.billHead != null)
+                                                        {
+                                                          ref.read(amountProvider.notifier).state =
+                                                              global.currentBill.billSumm(),
+                                                          ref.read(numGuestsProvider.notifier).state = global
+                                                              .currentBill.root!.billHead!.head!.guestscount!,
+                                                        }
+                                                    });
+                                          },
+                                        ),
+                                      ],
+                                    )),
+                              ),
                             ),
                           ),
                         ),
@@ -223,6 +249,12 @@ class _CurrentBillState extends ConsumerState<CurrentBill> with WidgetsBindingOb
                             currentBill.root!.billHead!.head!.guestscount = gNs;
                             ref.read(numGuestsProvider.notifier).state =
                                 currentBill.root!.billHead!.head!.guestscount!;
+                            if (scrollController.hasClients) {
+                              final position = scrollController.position.maxScrollExtent;
+                              if (gNs > 3) {
+                                scrollController.jumpTo(position + 65);
+                              }
+                            }
                           },
                           style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
                           icon: const Icon(
@@ -269,7 +301,9 @@ class _CurrentBillState extends ConsumerState<CurrentBill> with WidgetsBindingOb
                                 }
                                 global.currentBill.root!.billHead!.head!.amount =
                                     global.currentBill.billSumm();
+                                global.currentBill.root!.msgStatus!.msg!.idStatus = 1;
                                 LoadingIndicatorDialog().show(context, text: 'Отправляю и обновляю');
+                                delEmpty();
                                 var result = global.saveCurrentBill();
                                 result.then((value) => {
                                       if (!value)
@@ -284,7 +318,7 @@ class _CurrentBillState extends ConsumerState<CurrentBill> with WidgetsBindingOb
                                         }
                                       else
                                         {
-                                          ref.invalidate(billProvider),
+                                          //  ref.invalidate(billProvider),
                                           LoadingIndicatorDialog().dismiss(),
                                         }
                                     });
@@ -347,8 +381,10 @@ class _CurrentBillState extends ConsumerState<CurrentBill> with WidgetsBindingOb
                                           color: Colors.white,
                                           icon: const Icon(Icons.checklist_rtl_sharp),
                                           onPressed: () {
-                                            Navigator.push(context,
-                                                MaterialPageRoute(builder: (context) => const BillImageText()));
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) => const BillImageText()));
                                           },
                                         ),
                                       ),

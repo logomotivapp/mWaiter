@@ -61,7 +61,14 @@ class FindWareState extends State<FindWares> {
                     }
                   }
                 }
-                setState(() {});
+                setState(() {
+                  FocusScopeNode currentFocus = FocusScope.of(context);
+
+                  if (!currentFocus.hasPrimaryFocus) {
+                    currentFocus.unfocus();
+                  }
+                });
+
               }, icon: const Icon(Icons.search)),
             ],
           ),

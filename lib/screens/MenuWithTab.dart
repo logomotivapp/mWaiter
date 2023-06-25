@@ -162,6 +162,9 @@ class MenuWithTabHome extends State<MenuWithTab> with TickerProviderStateMixin, 
         cashGroups.addAll(
             global.menuStructure.menus!.cashGroup!.cash!.where((element1) => element1.idcode == element));
       }
+      cashGroups.forEach((element) {
+        element.backcolor = 0xffffffff;
+      });
     }
   }
 
@@ -176,13 +179,18 @@ class MenuWithTabHome extends State<MenuWithTab> with TickerProviderStateMixin, 
     _controller = TabController(length: 5, vsync: this);
     _controller.addListener(() {
       setState(() {
-//        _selectedIndex = _controller.index;
+        FocusScopeNode currentFocus = FocusScope.of(context);
+
+        if (!currentFocus.hasPrimaryFocus) {
+          currentFocus.unfocus();
+        }
       });
     });
     listMenuHead.clear();
-    listMenuHead.add(MenuHead(idcode: 0, dispname: 'ВСЕ', menudate: '', menuLine: []));
+    listMenuHead.add(MenuHead(idcode: 0, dispname: 'ВСЕ', menudate: '', menuLine: [], color: 0xffffff00));
     for (var element in global.menuStructure.menus!.menu!.menuHead!) {
       if ((element.idtype!.contains('ALACARD')) && (menuInTime(element.idcode!))) {
+        element.color = 0xffffffff;
         listMenuHead.add(element);
       }
     }
@@ -190,6 +198,7 @@ class MenuWithTabHome extends State<MenuWithTab> with TickerProviderStateMixin, 
     listComplexHead.clear();
     for (var element in global.menuStructure.menus!.menu!.menuHead!) {
       if ((element.idtype!.contains('COMPLEX')) && (menuInTime(element.idcode!))) {
+        element.color = 0xffffffff;
         listComplexHead.add(element);
       }
     }
@@ -333,10 +342,35 @@ class MenuWithTabHome extends State<MenuWithTab> with TickerProviderStateMixin, 
               guestNumber: widget.guestNum,
               canSelect: widget.canSelect,
             ),
-            FindWares(
-              guestNumber: widget.guestNum,
-              listToFind: listOfLinesAll,
-              canSelect: widget.canSelect,
+            Scaffold(
+              body: Column(
+                children: [
+                  Flexible(
+                      child: TextButton(
+                          onPressed: () {
+                            if (global.lastSelectedGroup > 0) {
+                              title = cashGroups
+                                  .firstWhere((element) => element.idcode == global.lastSelectedGroup)
+                                  .dispname!;
+                              cashGroups.forEach((element) {element.backcolor = 0xffffffff;});
+                              cashGroups
+                                  .firstWhere((element) => element.idcode == global.lastSelectedGroup).backcolor = 0xff76ff03;
+                              allDataRefresh(menuId, global.lastSelectedGroup);
+                              global.lastSelectedGroup = -1;
+                              _controller.animateTo(2);
+                            }
+                          },
+                          child: const Text('В группу последнего выбранного'))),
+                  Flexible(
+                    flex: 9,
+                    child: FindWares(
+                      guestNumber: widget.guestNum,
+                      listToFind: listOfLinesAll,
+                      canSelect: widget.canSelect,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -349,6 +383,10 @@ class MenuWithTabHome extends State<MenuWithTab> with TickerProviderStateMixin, 
     for (var element in listOf) {
       listOfWidget.add(TextButton(
         onPressed: () {
+          for (var element1 in listOf) {
+            element1.color = 0xffffffff;
+          }
+          element.color = 0xffffff00;
           if (element.idcode! == -100) {
             Navigator.push(
                 context,
@@ -364,6 +402,7 @@ class MenuWithTabHome extends State<MenuWithTab> with TickerProviderStateMixin, 
               menuTitle = element.dispname!;
               groupId = 0;
               groupTitle = '';
+
               allDataRefresh(menuId, groupId);
               title = menuTitle;
               if (cashGroups.isEmpty) {
@@ -387,7 +426,7 @@ class MenuWithTabHome extends State<MenuWithTab> with TickerProviderStateMixin, 
                   width: 1,
                 ),
                 borderRadius: BorderRadius.circular(8),
-                color: Colors.white,
+                color: Color(element.color!), // Colors.white,
               ),
               child: Center(
                 child: Text(
@@ -416,7 +455,11 @@ class MenuWithTabHome extends State<MenuWithTab> with TickerProviderStateMixin, 
     for (var element in listOf) {
       listOfWidget.add(TextButton(
         onPressed: () {
+          for (var element1 in listOf) {
+            element1.backcolor = 0xffffffff;
+          }
           setState(() {
+            element.backcolor = 0xff76ff03;
             groupId = element.idcode!;
             groupTitle = element.dispname!;
             title = '$menuTitle $groupTitle';
@@ -437,7 +480,7 @@ class MenuWithTabHome extends State<MenuWithTab> with TickerProviderStateMixin, 
                   width: 1,
                 ),
                 borderRadius: BorderRadius.circular(8),
-                color: Colors.white,
+                color: Color(element.backcolor!), //Colors.white,
               ),
               child: Center(
                 child: Text(

@@ -11,6 +11,7 @@ class EmptyBillList extends HookWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       backgroundColor: const Color(0xffE4E4E4),
       body: Column(
         children: <Widget>[

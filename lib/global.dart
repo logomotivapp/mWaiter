@@ -29,7 +29,8 @@ bool itemSelected = false;
 int srvIdLine = 0;
 Fea fea = Fea();
 bool isSnackbarActive = false;
-//final navKey = GlobalKey<NavigatorState>();
+int lastSelectedGroup = -1;
+
 final controllerProvider = StateProvider<String>((ref) {
   return "";
 });
@@ -99,8 +100,8 @@ Line billLineFromMenuLine(MenuLine menuLine) {
   Ware ware = Ware();
   try {
     ware = menuStructure.menus!.wares!.ware!.firstWhere((element) => element.idcode == menuLine.idware);
-    if (currentBill.root == null) {
-      newLine.idbill = -1;
+    if (currentBill.root == null || currentBill.root!.msgStatus!.msg!.idStatus == -1) {
+      newLine.idbill = -100;
     } else {
       newLine.idbill = currentBill.root!.billHead!.head!.idcode;
     } //json['ID_BILL'];
@@ -153,7 +154,36 @@ List<MenuLine> complexMenuFromMenuLine(MenuHead menuHead) {
 void addNewLine(Line selectedLine, int gnumber, double quantity, int norder, BuildContext context) {
   BillCondiment bc;
   Condiment sc;
-  Line newLine = selectedLine;
+  Line newLine = Line(
+    idbill: selectedLine.idbill,
+    idware: selectedLine.idware,
+    price: selectedLine.price,
+    quantity: selectedLine.quantity,
+    group: selectedLine.group,
+    taxraterow: selectedLine.taxraterow,
+    sumraterow: selectedLine.sumraterow,
+    taxrate: selectedLine.taxrate,
+    sumrate: selectedLine.sumrate,
+    markquantity: selectedLine.markquantity,
+    norder: selectedLine.norder,
+    idline: selectedLine.idline,
+    dispname: selectedLine.dispname,
+    idfline: selectedLine.idfline,
+    iscomplex: selectedLine.iscomplex,
+    complexquantity: selectedLine.complexquantity,
+    nodiscount: selectedLine.nodiscount,
+    originalid: selectedLine.originalid,
+    idmenu: selectedLine.idmenu,
+    isServed: selectedLine.isServed,
+    gnumber: selectedLine.gnumber,
+    packing: selectedLine.packing,
+    unitname: selectedLine.unitname,
+      idshop: selectedLine.idshop,
+      marking: selectedLine.marking,
+    idchoice: selectedLine.idchoice,
+    idcomplexline: selectedLine.idcomplexline,
+    iscomplited: selectedLine.iscomplited,
+  ); //selectedLine;
   srvIdLine--;
   newLine.idline = srvIdLine;
   newLine.norder = norder;
@@ -192,6 +222,7 @@ void addNewLine(Line selectedLine, int gnumber, double quantity, int norder, Bui
   }
   currentBill.root!.billLines!.line!.add(newLine);
   currentBill.root!.billHead!.head!.amount = currentBill.billSumm();
+  lastSelectedGroup = newLine.group!;
 }
 
 bool ifLineInLines(int idWare, int guestNumber) {
@@ -212,6 +243,10 @@ Future<bool> saveCurrentBill() async {
       getBill = GetBill.fromJson(response.data);
       if (getBill.root!.msgStatus != null) {
         if (getBill.root!.msgStatus!.msg!.idStatus == 0) {
+          currentBill = getBill;
+          if (currentBill.root!.billCondiments!.condiment == null) {
+            currentBill.root!.billCondiments!.condiment = [];
+          }
           result = true;
         } else {
           result = false;
