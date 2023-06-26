@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:focus_detector/focus_detector.dart';
@@ -8,6 +9,7 @@ import 'package:restismob/global.dart' as global;
 import 'package:restismob/models/localTypes/TextInputAlert.dart';
 
 import '../models/BillCondiment.dart';
+import '../models/Featured/Fea.dart';
 import '../models/Line.dart';
 import '../models/localTypes/condimAlert.dart';
 import '../models/localTypes/qo_Alert.dart';
@@ -97,6 +99,17 @@ class GuestMeal extends ConsumerWidget {
         ),
       ],
     );
+
+    void callBack(){
+      ref.invalidate(listGuestProvider);
+      //  Navigator.of(context).pop();
+      if (listScrollController.hasClients) {
+        final position = listScrollController
+            .position.maxScrollExtent;
+        listScrollController.jumpTo(position);
+      }
+    }
+
     return FocusDetector(
       onVisibilityGained: () {
         ref.invalidate(listGuestProvider);
@@ -548,105 +561,7 @@ class GuestMeal extends ConsumerWidget {
                                 onPressed: () {
                                   showModalBottomSheet<void>(
                                     context: context,
-                                    builder: (BuildContext context) {
-                                      return SizedBox(
-                                        height: MediaQuery.of(context).size.height * .45,
-                                        child: Center(
-                                          child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: <Widget>[
-                                              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                                                const Icon(
-                                                  Icons.star,
-                                                  color: Colors.black38,
-                                                ),
-                                                TextButton(
-                                                    child: const Text("Избранные позиции",
-                                                        style: TextStyle(
-                                                          fontSize: 16,
-                                                          fontFamily: "Montserrat",
-                                                          color: Colors.black87,
-                                                          fontWeight: FontWeight.bold,
-                                                        )),
-                                                    onPressed: () => Navigator.of(context).pop()),
-                                              ]),
-                                              Flexible(
-                                                child: ListView.builder(
-                                                  itemCount: poplistOfLines.length,
-                                                  scrollDirection: Axis.vertical,
-                                                  itemBuilder: (_, index) => Card(
-                                                    margin: const EdgeInsets.all(5),
-                                                    child: ListTile(
-                                                        title: Text(poplistOfLines[index].dispname!,
-                                                            style: const TextStyle(
-                                                              color: Colors.black45,
-                                                              fontSize: 14,
-                                                              fontFamily: "Montserrat",
-                                                              fontWeight: FontWeight.w800,
-                                                            )),
-                                                        //  subtitle: Text(_items[index]['subtitle']),
-                                                        trailing: IconButton(
-                                                          icon: global.ifLineInLines(
-                                                                  poplistOfLines[index].idware!, guestNumber)
-                                                              ? const Icon(
-                                                                  Icons.check_circle,
-                                                                  color: Color(0xff1A69A3),
-                                                                )
-                                                              : (poplistOfLines[index].quantity! < 0
-                                                                  ? const Icon(Icons.block, color: Colors.red)
-                                                                  : const Icon(Icons.add_circle_outline)),
-                                                          onPressed: () {
-                                                            if (poplistOfLines[index].quantity! < 0) {
-                                                              ScaffoldMessenger.of(context)
-                                                                  .showSnackBar(const SnackBar(
-                                                                      backgroundColor: Colors.redAccent,
-                                                                      content: Text(
-                                                                        'Бдюдо в стоп листе',
-                                                                        style: TextStyle(
-                                                                          fontSize: 18,
-                                                                        ),
-                                                                        textAlign: TextAlign.center,
-                                                                      )));
-                                                            } else {
-                                                              showDialog(
-                                                                      builder: (_) => QoAlert(
-                                                                          guest: guestNumber,
-                                                                          ware: poplistOfLines[index]
-                                                                              .dispname!),
-                                                                      context: context)
-                                                                  .then((value) {
-                                                                if (value != null) {
-                                                                  global.addNewLine(poplistOfLines[index],
-                                                                      value[2], value[0], value[1], context);
-                                                                  if (value[2] >
-                                                                      global.currentBill.root!.billHead!.head!
-                                                                          .guestscount) {
-                                                                    global.currentBill.root!.billHead!.head!
-                                                                        .guestscount = value[2];
-                                                                  }
-                                                                  ref.invalidate(listGuestProvider);
-                                                                  //  Navigator.of(context).pop();
-                                                                  if (listScrollController.hasClients) {
-                                                                    final position = listScrollController
-                                                                        .position.maxScrollExtent;
-                                                                    listScrollController.jumpTo(position);
-                                                                  }
-                                                                }
-                                                              });
-                                                            }
-                                                          },
-                                                        )),
-                                                  ),
-                                                ),
-                                                //ListForSelectWares(
-                                                // listOfLines: listOfLines, gnumber: gnumber,)
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      );
-                                    },
+                                    builder: (context) => FeaList(poplistOfLines: poplistOfLines, voidCallback: callBack,),
                                   );
                                 })
                           ]),
@@ -676,6 +591,147 @@ class GuestMeal extends ConsumerWidget {
     }
     return result;
   }
+}
+
+class FeaList extends StatefulWidget{
+  final List<Line> poplistOfLines;
+  final VoidCallback voidCallback;
+
+  const FeaList({super.key, required this.poplistOfLines, required this.voidCallback});
+
+  @override
+  State<FeaList> createState() => FeaListState();
+}
+
+class FeaListState extends State<FeaList>{
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: MediaQuery.of(context).size.height * .45,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              const Icon(
+                Icons.star,
+                color: Colors.black38,
+              ),
+              TextButton(
+                  child: const Text("Избранные позиции",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontFamily: "Montserrat",
+                        color: Colors.black87,
+                        fontWeight: FontWeight.bold,
+                      )),
+                  onPressed: () => Navigator.of(context).pop()),
+            ]),
+            Flexible(
+              child: ListView.builder(
+                itemCount: widget.poplistOfLines.length,
+                scrollDirection: Axis.vertical,
+                itemBuilder: (_, index) => Card(
+                  margin: const EdgeInsets.all(5),
+                  child: ListTile(
+                    leading: IconButton(onPressed: () {
+                      delWare(widget.poplistOfLines[index]);
+                      global.fea.featuredRoot!.featuredItems!.item!
+                          .removeWhere((element) => element.idware == widget.poplistOfLines[index].idware);
+                      widget.poplistOfLines.removeAt(index);
+                      setState(() {});
+                    }, icon: const Icon(Icons.remove_moderator_outlined),),
+                      title: Text(widget.poplistOfLines[index].dispname!,
+                          style: const TextStyle(
+                            color: Colors.black45,
+                            fontSize: 14,
+                            fontFamily: "Montserrat",
+                            fontWeight: FontWeight.w800,
+                          )),
+                      //  subtitle: Text(_items[index]['subtitle']),
+                      trailing: IconButton(
+                        icon: global.ifLineInLines(
+                            widget.poplistOfLines[index].idware!, guestNumber)
+                            ? const Icon(
+                          Icons.check_circle,
+                          color: Color(0xff1A69A3),
+                        )
+                            : (widget.poplistOfLines[index].quantity! < 0
+                            ? const Icon(Icons.block, color: Colors.red)
+                            : const Icon(Icons.add_circle_outline)),
+                        onPressed: () {
+                          if (widget.poplistOfLines[index].quantity! < 0) {
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                                backgroundColor: Colors.redAccent,
+                                content: Text(
+                                  'Бдюдо в стоп листе',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                )));
+                          } else {
+                            showDialog(
+                                builder: (_) => QoAlert(
+                                    guest: guestNumber,
+                                    ware: widget.poplistOfLines[index]
+                                        .dispname!),
+                                context: context)
+                                .then((value) {
+                              if (value != null) {
+                                global.addNewLine(widget.poplistOfLines[index],
+                                    value[2], value[0], value[1], context);
+                                if (value[2] >
+                                    global.currentBill.root!.billHead!.head!
+                                        .guestscount) {
+                                  global.currentBill.root!.billHead!.head!
+                                      .guestscount = value[2];
+                                }
+                                widget.voidCallback();
+                                setState(() { });
+                              }
+                            });
+                          }
+                        },
+                      )),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> delWare(Line line) async {
+    Fea? getBill;
+    var dio = Dio(BaseOptions(connectTimeout: const Duration(seconds: 15)));
+    String request =
+        'http://${global.uri}/apim/FeaturedDelItem?Id_Waiter=${global.waiter.user!.idcode!}&Id_Ware=${line.idware}';
+    final response = await dio.post(
+      request,
+    );
+    debugPrint(response.data!.toString());
+    if (response.statusCode == 200) {
+      getBill = Fea.fromJson(response.data);
+      if (getBill.featuredRoot!.msgStatus!.msg!.idStatus == 0) {
+      } else {
+        goMsg(getBill.featuredRoot!.msgStatus!.msg!.msgError!);
+      }
+    } else {
+      goMsg('Ошибка подключения');
+    }
+  }
+
+  void goMsg(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(msg),
+      backgroundColor: Colors.redAccent,
+    ));
+  }
+
 }
 
 class GuestScreen extends StatefulWidget {
