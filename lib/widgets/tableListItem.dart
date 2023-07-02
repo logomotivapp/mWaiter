@@ -5,7 +5,9 @@ import 'package:intl/intl.dart';
 
 import 'package:restismob/global.dart' as global;
 import 'package:restismob/models/Bill.dart';
-import 'package:restismob/models/localTypes/kursAlert.dart';
+import 'package:restismob/models/localTypes/KursAlert.dart';
+import 'package:restismob/models/localTypes/TextInputAlert.dart';
+import 'package:restismob/models/menu/CheckinResult.dart';
 
 import '../models/GetBill.dart';
 import '../models/localTypes/LoadingIndicatorDialog.dart';
@@ -183,7 +185,8 @@ class _PopupMenuItemState extends State<TableItem> {
                             builder: (context) => CurrentBill(widget.bill.idcode!),
                             settings: const RouteSettings(name: "/currentbill")))
                     .then((value) {
-                  if (global.currentBill.root!.billHead!.head != null && global.currentBill.root!.msgStatus!.msg!.idStatus != -1 ) {
+                  if (global.currentBill.root!.billHead!.head != null &&
+                      global.currentBill.root!.msgStatus!.msg!.idStatus != -1) {
                     widget.bill.guestscount = global.currentBill.root!.billHead!.head!.guestscount!;
                     widget.bill.amount = global.currentBill.root!.billHead!.head!.amount!;
                   }
@@ -193,7 +196,7 @@ class _PopupMenuItemState extends State<TableItem> {
               if (selectedMenu!.contains('pickup')) {
                 Future<bool> resu;
                 if (widget.kurss.contains(2) || widget.kurss.contains(3)) {
-                  showDialog(context: context, builder: (_) => kursAlert(kurss: widget.kurss))
+                  showDialog(context: context, builder: (_) => KursAlert(kurss: widget.kurss))
                       .then((value) => {
                             if ((value != null) && (value != 1))
                               {
@@ -215,6 +218,22 @@ class _PopupMenuItemState extends State<TableItem> {
                           });
                 }
               }
+              if (selectedMenu!.contains('checkin')) {
+                Future<bool> resu;
+                if (widget.bill.idcard == 0) {
+                  showDialog(context: context, builder: (_) => const TextInputAlert(title: 'Введите код'))
+                      .then((value) => {
+                            if (value != null)
+                              {
+                                LoadingIndicatorDialog().show(context, text: 'Отправляю'),
+                                resu = checkinCurrentBill(widget.bill.idcode!, value),
+                                resu.then((value1) => {
+                                      LoadingIndicatorDialog().dismiss(),
+                                    })
+                              }
+                          });
+                }
+              }
             },
             itemBuilder: (BuildContext bc) {
               return [
@@ -228,6 +247,20 @@ class _PopupMenuItemState extends State<TableItem> {
                         width: 24,
                         height: 24,
                         child: SvgPicture.asset('assets/images/add.svg', semanticsLabel: 'vector'),
+                      )
+                    ],
+                  ),
+                ),
+                PopupMenuItem(
+                  value: '/checkin',
+                  child: Row(
+                    children: <Widget>[
+                      const Text("Чекин"),
+                      const Spacer(),
+                      SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: SvgPicture.asset('assets/images/checkin.svg', semanticsLabel: 'vector'),
                       )
                     ],
                   ),
@@ -252,6 +285,35 @@ class _PopupMenuItemState extends State<TableItem> {
         ),
       ),
     );
+  }
+
+  void goMsg(String msg, Color clr) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(msg),
+      backgroundColor: clr,
+      behavior: SnackBarBehavior.floating,
+    ));
+  }
+
+  Future<bool> checkinCurrentBill(num billId, String code) async {
+    CheckinResult? ch;
+    bool result = false;
+    var dio = Dio(BaseOptions(connectTimeout: const Duration(seconds: 15)));
+    String request = 'http://${global.uri}/apim/Checkin?secretCode=$code&Id_Bill=$billId';
+    final response = await dio.get(request);
+    debugPrint(response.data!.toString());
+    if (response.statusCode == 200) {
+      ch = CheckinResult.fromJson(response.data);
+      if (ch.checkIn != null) {
+        if (ch.checkIn!.msgStatus!.msg!.idStatus != 0) {
+          goMsg(ch.checkIn!.msgStatus!.msg!.msgError!, Colors.redAccent);
+        } else {
+          goMsg(ch.checkIn!.msgStatus!.msg!.msgError!, Colors.greenAccent);
+          result = true;
+        }
+      }
+    }
+    return result;
   }
 
   Future<bool> pickupCurrentBill(num billId, int kurs) async {

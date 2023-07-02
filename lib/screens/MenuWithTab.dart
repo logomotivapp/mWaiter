@@ -162,9 +162,9 @@ class MenuWithTabHome extends State<MenuWithTab> with TickerProviderStateMixin, 
         cashGroups.addAll(
             global.menuStructure.menus!.cashGroup!.cash!.where((element1) => element1.idcode == element));
       }
-      cashGroups.forEach((element) {
+      for (var element in cashGroups) {
         element.backcolor = 0xffffffff;
-      });
+      }
     }
   }
 
@@ -239,6 +239,50 @@ class MenuWithTabHome extends State<MenuWithTab> with TickerProviderStateMixin, 
     }
   }
 
+  void goMsg(int index) {
+    late String msg;
+    ScaffoldMessenger.of(context).clearSnackBars();
+    switch (index) {
+      case 0:
+        {
+          msg = 'Меню';
+          break;
+        }
+      case 1:
+        {
+          msg = 'Группы';
+          break;
+        }
+      case 2:
+        {
+          msg = 'Блюда';
+          break;
+        }
+      case 3:
+        {
+          msg = 'Популярные';
+          break;
+        }
+      case 4:
+        {
+          msg = 'Поиск';
+          break;
+        }
+    }
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Center(
+          child: Text(
+            msg,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+            ),
+          )),
+      backgroundColor: const Color(0xff1A69A3),
+      behavior: SnackBarBehavior.floating,
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     var appBar = AppBar(
@@ -246,7 +290,7 @@ class MenuWithTabHome extends State<MenuWithTab> with TickerProviderStateMixin, 
       centerTitle: true,
       leading: InkWell(
         onTap: () {
-          //global.navKey.currentState!.pop();
+          ScaffoldMessenger.of(context).clearSnackBars();
           Navigator.of(context).maybePop();
         },
         child: const Icon(
@@ -268,32 +312,28 @@ class MenuWithTabHome extends State<MenuWithTab> with TickerProviderStateMixin, 
         ),
       ),
       bottom:
-          TabBar(indicatorWeight: 6.0, indicatorColor: Colors.white, controller: _controller, tabs: const [
+          TabBar(indicatorWeight: 6.0, indicatorColor: Colors.white, controller: _controller,
+              onTap: (index) => goMsg(index),
+              tabs: const [
         Tab(
-          child: Text(
-            'Меню',
-            textAlign: TextAlign.center,
-          ),
+          child: //Text('Меню',textAlign: TextAlign.center,),
+          ImageIcon(AssetImage('assets/icons/menu.png'),size: 40, )
         ),
         Tab(
-          child: Text(
-            'Группы',
-            textAlign: TextAlign.center,
-          ),
+          child: //Text('Группы', textAlign: TextAlign.center,),
+          ImageIcon(AssetImage('assets/icons/grouped-list.png'),size: 40, )
         ),
         Tab(
-          child: Text(
-            'Блюда',
-            textAlign: TextAlign.center,
-          ),
+          child: //Text('Блюда', textAlign: TextAlign.center,),
+          ImageIcon(AssetImage('assets/icons/dish.png'),size: 40, )
         ),
         Tab(
-          child: Text(
-            'Популярные',
-            textAlign: TextAlign.center,
-          ),
+          child: //Text('Популярные', textAlign: TextAlign.center,),
+          ImageIcon(AssetImage('assets/icons/like.png'),size: 40, )
         ),
-        Tab(child: Icon(Icons.find_in_page_outlined) //Text('Поиск', textAlign: TextAlign.center,),
+        Tab(child:
+        //Icon(Icons.find_in_page_outlined, size: 40,) //Text('Поиск', textAlign: TextAlign.center,),
+        ImageIcon(AssetImage('assets/icons/search.png'),size: 40, )
             )
       ]),
       actions: [
@@ -352,7 +392,7 @@ class MenuWithTabHome extends State<MenuWithTab> with TickerProviderStateMixin, 
                               title = cashGroups
                                   .firstWhere((element) => element.idcode == global.lastSelectedGroup)
                                   .dispname!;
-                              cashGroups.forEach((element) {element.backcolor = 0xffffffff;});
+                              for (var element in cashGroups) {element.backcolor = 0xffffffff;}
                               cashGroups
                                   .firstWhere((element) => element.idcode == global.lastSelectedGroup).backcolor = 0xff76ff03;
                               allDataRefresh(menuId, global.lastSelectedGroup);

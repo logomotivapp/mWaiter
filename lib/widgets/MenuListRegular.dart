@@ -28,7 +28,7 @@ class MenuListRegularState extends State<MenuListRegular> {
       children: [
         Flexible(
           child: Scrollbar(
-            thumbVisibility: true,
+            thumbVisibility: false,
             thickness: 5,
             child: ListView.builder(
               itemCount: widget.listOfLines.length,

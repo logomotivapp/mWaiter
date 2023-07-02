@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
-class kursAlert extends StatefulWidget {
+class KursAlert extends StatefulWidget {
   final List<int> kurss;
 
-  const kursAlert({super.key, required this.kurss});
+  const KursAlert({super.key, required this.kurss});
   @override
-  State<kursAlert> createState() => kursAlertState();
+  State<KursAlert> createState() => KursAlertState();
 }
 
-class kursAlertState extends State<kursAlert> {
+class KursAlertState extends State<KursAlert> {
 
   Color color2 = Colors.black45;
   Color color3 = Colors.black45;
@@ -46,8 +46,8 @@ class kursAlertState extends State<kursAlert> {
               thickness: 3,
               color: Colors.black54,
             ),
-            Row(
-              children: const [
+            const Row(
+              children: [
                 Text(
                   ' ',
                 )
@@ -123,8 +123,8 @@ class kursAlertState extends State<kursAlert> {
                 ),
               ],
             ),
-            Row(
-              children: const [
+            const Row(
+              children: [
                 Text(
                   ' ',
                 )

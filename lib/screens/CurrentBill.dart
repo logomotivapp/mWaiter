@@ -180,7 +180,7 @@ class _CurrentBillState extends ConsumerState<CurrentBill> with WidgetsBindingOb
                           style: ListTileStyle.list,
                           dense: true,
                           child: Scrollbar(
-                            thumbVisibility: true,
+                            thumbVisibility: false,
                             thickness: 10,
                             controller: scrollController,
                             child: ListView.builder(
@@ -325,13 +325,14 @@ class _CurrentBillState extends ConsumerState<CurrentBill> with WidgetsBindingOb
                               }),
                         ),
                       ),
+                      const Text('',style: TextStyle(fontSize: 24),),
                       Flexible(
                         flex: 2,
                         child: Container(
                           width: 338,
                           height: 160,
                           alignment: Alignment.bottomCenter,
-                          color: Colors.white,
+                          decoration: const BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(8)), color: Colors.white,),
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                             child: Column(
@@ -357,19 +358,27 @@ class _CurrentBillState extends ConsumerState<CurrentBill> with WidgetsBindingOb
                                     //const Text('₽'),
                                   ],
                                 ),
-                                const Row(
+                                 Row(
+                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(
-                                      '  Без учета скидок',
-                                      style: TextStyle(
-                                        color: Colors.black26,
-                                        fontSize: 12,
-                                        fontFamily: "Montserrat",
-                                        fontWeight: FontWeight.w400,
+                                    Container(
+                                      alignment: Alignment.topLeft,
+                                      child: const Column(
+                                        children: [
+                                          Text(
+                                            '  Без учета скидок',
+                                            style: TextStyle(
+                                              color: Colors.black26,
+                                              fontSize: 12,
+                                              fontFamily: "Montserrat",
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                          ),
+                                          Text('',style: TextStyle(fontSize: 30),),
+                                        ],
                                       ),
                                     ),
-                                  ],
-                                ),
+
                                 Container(
                                   alignment: Alignment.bottomRight,
                                   child: Column(
@@ -399,7 +408,9 @@ class _CurrentBillState extends ConsumerState<CurrentBill> with WidgetsBindingOb
                                       )
                                     ],
                                   ),
-                                )
+                                ),
+                                  ],
+                                ),
                               ],
                             ),
                           ),

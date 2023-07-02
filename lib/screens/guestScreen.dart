@@ -729,6 +729,7 @@ class FeaListState extends State<FeaList>{
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(msg),
       backgroundColor: Colors.redAccent,
+      behavior: SnackBarBehavior.floating,
     ));
   }
 
