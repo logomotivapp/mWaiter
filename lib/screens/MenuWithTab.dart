@@ -162,6 +162,11 @@ class MenuWithTabHome extends State<MenuWithTab> with TickerProviderStateMixin, 
         cashGroups.addAll(
             global.menuStructure.menus!.cashGroup!.cash!.where((element1) => element1.idcode == element));
       }
+      cashGroups.sort((a, b) => a.dispname != null
+          ? b.dispname != null
+          ? a.dispname!.toLowerCase().compareTo(b.dispname!.toLowerCase())
+          : 1
+          : 0);
       for (var element in cashGroups) {
         element.backcolor = 0xffffffff;
       }
@@ -230,7 +235,9 @@ class MenuWithTabHome extends State<MenuWithTab> with TickerProviderStateMixin, 
     switch (state) {
       case AppLifecycleState.paused:
         var result = global.saveCurrentBill();
-        result.then((value) => {Navigator.popUntil(context, (route) => route.settings.name == "/prebills")});
+        result.then((value) => {
+          Navigator.popUntil(context, (route) => route.settings.name == "/prebills")
+        });
         break;
       case AppLifecycleState.inactive:
       case AppLifecycleState.resumed:
@@ -313,7 +320,7 @@ class MenuWithTabHome extends State<MenuWithTab> with TickerProviderStateMixin, 
       ),
       bottom:
           TabBar(indicatorWeight: 6.0, indicatorColor: Colors.white, controller: _controller,
-              onTap: (index) => goMsg(index),
+        //      onTap: (index) => goMsg(index),
               tabs: const [
         Tab(
           child: //Text('Меню',textAlign: TextAlign.center,),
@@ -341,7 +348,9 @@ class MenuWithTabHome extends State<MenuWithTab> with TickerProviderStateMixin, 
           color: Colors.white,
           icon: const Icon(Icons.checklist_rtl_sharp),
           onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const BillImageText()));
+            if (global.currentBill.root != null && global.currentBill.root!.billHead!.head != null) {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const BillImageText()));
+            }
           },
         ),
       ],

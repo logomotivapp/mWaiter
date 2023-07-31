@@ -5,13 +5,15 @@ import 'package:package_info/package_info.dart';
 import 'package:restismob/screens/PreBillsList.dart';
 import 'package:restismob/screens/SettingsR.dart';
 import 'package:restismob/widgets/myFloatingButton.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'global.dart';
 import 'models/Waiter.dart';
 import 'global.dart' as global;
 
 class Login extends ConsumerWidget {
-  Login({super.key});
+  final String? phone;
+  Login(this.phone, {super.key});
 
   final controller = TextEditingController();
 
@@ -46,11 +48,17 @@ class Login extends ConsumerWidget {
       actions: [
         IconButton(
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsR(canEdit: true ,)));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const SettingsR(
+                            canEdit: true,
+                          )));
             },
             icon: const Icon(Icons.settings))
       ],
     );
+    
     return Scaffold(
       appBar: appBar,
       body: Container(
@@ -59,7 +67,9 @@ class Login extends ConsumerWidget {
         child: Column(
           children: <Widget>[
             const Spacer(),
-            _buildTextFields(ref),
+            phone == null
+            ?_buildTextFields(ref)
+            : _oldPhone(ref),
             const Spacer(),
             MyFloatingBunnon(
               width: 245,
@@ -76,6 +86,7 @@ class Login extends ConsumerWidget {
   }
 
   Future<void> loadWaiter() async {
+    final Future<SharedPreferences> prefs = SharedPreferences.getInstance();
     final PackageInfo info = await PackageInfo.fromPlatform();
     Waiter employee;
     try {
@@ -91,7 +102,23 @@ class Login extends ConsumerWidget {
         if (employee.user!.iderror == 0) {
           waiter = employee;
           global.ref1?.read(loadProvider.notifier).state = false;
-          //_toBillList(waiter.user!.idcode!);
+
+          prefs.then((SharedPreferences prefss) {
+            prefss.setString('phone', global.telNum.trim());
+            prefss.setInt('lastDay', DateTime.now().millisecondsSinceEpoch);
+          });
+          if (waiter.user!.idcashregister == null || waiter.user!.idcashregister!  <= 0) {
+            ScaffoldMessenger.of(context1!).showSnackBar(const SnackBar(
+                content: Center(
+                  child: Text(
+              'Не назначена касса',
+              style: TextStyle(color: Colors.yellowAccent),
+            ),
+                ),
+              backgroundColor: Colors.redAccent,
+            ));
+          }
+
           Navigator.push(
               context1!,
               MaterialPageRoute(
@@ -127,6 +154,16 @@ class Login extends ConsumerWidget {
         backgroundColor: Colors.redAccent,
       ));
     }
+  }
+
+  Widget _oldPhone(WidgetRef ref){
+    global.telNum = phone??'';
+    return const Text('Пока помним номер', style: TextStyle(
+      fontFamily: 'Montserrat',
+      fontSize: 24,
+      letterSpacing: 0,
+      fontWeight: FontWeight.w700,
+    ),);
   }
 
   Widget _buildTextFields(WidgetRef ref) {

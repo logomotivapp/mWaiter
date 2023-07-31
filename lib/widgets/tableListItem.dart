@@ -5,12 +5,13 @@ import 'package:intl/intl.dart';
 
 import 'package:restismob/global.dart' as global;
 import 'package:restismob/models/Bill.dart';
-import 'package:restismob/models/localTypes/KursAlert.dart';
-import 'package:restismob/models/localTypes/TextInputAlert.dart';
+import 'package:restismob/models/localTypes/kurs_alert.dart';
+import 'package:restismob/models/localTypes/text_input_alert.dart';
 import 'package:restismob/models/menu/CheckinResult.dart';
 
+import '../models/BonusClubNote.dart';
 import '../models/GetBill.dart';
-import '../models/localTypes/LoadingIndicatorDialog.dart';
+import '../models/localTypes/loading_indicator_dialog.dart';
 import '../screens/CurrentBill.dart';
 
 class TableItem extends StatefulWidget {
@@ -18,13 +19,14 @@ class TableItem extends StatefulWidget {
   final int hColor;
   final List<int> kurss;
   final String statusB;
+  final VoidCallback voidCallback;
 
   const TableItem({
     super.key,
     required this.bill,
     this.hColor = 0xffFFB5A5,
     required this.kurss,
-    required this.statusB,
+    required this.statusB, required this.voidCallback,
   });
 
   @override
@@ -220,7 +222,7 @@ class _PopupMenuItemState extends State<TableItem> {
               }
               if (selectedMenu!.contains('checkin')) {
                 Future<bool> resu;
-                if (widget.bill.idcard == 0) {
+           //     if (widget.bill.idcard == 0) {
                   showDialog(context: context, builder: (_) => const TextInputAlert(title: 'Введите код'))
                       .then((value) => {
                             if (value != null)
@@ -228,11 +230,29 @@ class _PopupMenuItemState extends State<TableItem> {
                                 LoadingIndicatorDialog().show(context, text: 'Отправляю'),
                                 resu = checkinCurrentBill(widget.bill.idcode!, value),
                                 resu.then((value1) => {
+                                      widget.voidCallback(),
                                       LoadingIndicatorDialog().dismiss(),
                                     })
                               }
                           });
-                }
+               // }
+              }
+              if (selectedMenu!.contains('bonuclub')) {
+                Future<bool> resu;
+                //     if (widget.bill.idcard == 0) {
+                showDialog(context: context, builder: (_) => const TextInputAlert(title: 'Введите примечание'))
+                    .then((value) => {
+                  if (value != null)
+                    {
+                      LoadingIndicatorDialog().show(context, text: 'Отправляю'),
+                      resu = bonusClubCurrentBill(widget.bill.idcode!, value),
+                      resu.then((value1) => {
+                        widget.voidCallback(),
+                        LoadingIndicatorDialog().dismiss(),
+                      })
+                    }
+                });
+                // }
               }
             },
             itemBuilder: (BuildContext bc) {
@@ -279,6 +299,20 @@ class _PopupMenuItemState extends State<TableItem> {
                     ],
                   ),
                 ),
+                PopupMenuItem(
+                  value: '/bonuclub',
+                  child: Row(
+                    children: <Widget>[
+                      const Text("Примечание"),
+                      const Spacer(),
+                      SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: SvgPicture.asset('assets/images/message.svg', semanticsLabel: 'vector'),
+                      )
+                    ],
+                  ),
+                ),
               ];
             },
           ),
@@ -293,6 +327,27 @@ class _PopupMenuItemState extends State<TableItem> {
       backgroundColor: clr,
       behavior: SnackBarBehavior.floating,
     ));
+  }
+
+  Future<bool> bonusClubCurrentBill(num billId, String code) async {
+    BonusClubNote? bn;
+    bool result = false;
+    var dio = Dio(BaseOptions(connectTimeout: const Duration(seconds: 15)));
+    String request = 'http://${global.uri}/apim/BonusClub?Note=$code&Id_Bill=$billId';
+    final response = await dio.get(request);
+    debugPrint(response.data!.toString());
+    if (response.statusCode == 200) {
+      bn = BonusClubNote.fromJson(response.data);
+      if (bn.bonusClub != null) {
+        if (bn.bonusClub!.msgStatus!.msg!.idStatus != 0) {
+        //  goMsg(bn.bonusClub!.msgStatus!.msg!.msgError!, Colors.redAccent);
+        } else {
+        //  goMsg(bn.bonusClub!.msgStatus!.msg!.msgError!, Colors.greenAccent);
+          result = true;
+        }
+      }
+    }
+    return result;
   }
 
   Future<bool> checkinCurrentBill(num billId, String code) async {

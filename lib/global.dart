@@ -30,6 +30,9 @@ int srvIdLine = 0;
 Fea fea = Fea();
 bool isSnackbarActive = false;
 int lastSelectedGroup = -1;
+int lastLoginDay = 0;
+bool savingBill = false;
+bool markSending = false;
 
 final controllerProvider = StateProvider<String>((ref) {
   return "";
@@ -100,7 +103,9 @@ Line billLineFromMenuLine(MenuLine menuLine) {
   Ware ware = Ware();
   try {
     ware = menuStructure.menus!.wares!.ware!.firstWhere((element) => element.idcode == menuLine.idware);
-    if (currentBill.root == null || currentBill.root!.msgStatus!.msg!.idStatus == -1) {
+    if (currentBill.root == null ||
+        currentBill.root!.billHead!.head == null ||
+        currentBill.root!.msgStatus!.msg!.idStatus == -1) {
       newLine.idbill = -100;
     } else {
       newLine.idbill = currentBill.root!.billHead!.head!.idcode;
@@ -158,14 +163,14 @@ void addNewLine(Line selectedLine, int gnumber, double quantity, int norder, Bui
     idbill: selectedLine.idbill,
     idware: selectedLine.idware,
     price: selectedLine.price,
-    quantity: selectedLine.quantity,
+    quantity: quantity,
     group: selectedLine.group,
     taxraterow: selectedLine.taxraterow,
     sumraterow: selectedLine.sumraterow,
     taxrate: selectedLine.taxrate,
     sumrate: selectedLine.sumrate,
     markquantity: selectedLine.markquantity,
-    norder: selectedLine.norder,
+    norder: norder,
     idline: selectedLine.idline,
     dispname: selectedLine.dispname,
     idfline: selectedLine.idfline,
@@ -175,11 +180,11 @@ void addNewLine(Line selectedLine, int gnumber, double quantity, int norder, Bui
     originalid: selectedLine.originalid,
     idmenu: selectedLine.idmenu,
     isServed: selectedLine.isServed,
-    gnumber: selectedLine.gnumber,
+    gnumber: gnumber,
     packing: selectedLine.packing,
     unitname: selectedLine.unitname,
-      idshop: selectedLine.idshop,
-      marking: selectedLine.marking,
+    idshop: selectedLine.idshop,
+    marking: selectedLine.marking,
     idchoice: selectedLine.idchoice,
     idcomplexline: selectedLine.idcomplexline,
     iscomplited: selectedLine.iscomplited,
@@ -194,6 +199,7 @@ void addNewLine(Line selectedLine, int gnumber, double quantity, int norder, Bui
   if (menuStructure.menus!.condiments!.condiment!
           .firstWhereOrNull((element) => element.idfware! == newLine.idware!) !=
       null) {
+    List<Condiment> lc = [];
     showDialog(
             builder: (_) => CondAlert(
                   condiments: menuStructure.menus!.condiments!.condiment!,
@@ -204,19 +210,22 @@ void addNewLine(Line selectedLine, int gnumber, double quantity, int norder, Bui
         .then((value) => {
               if (value != null)
                 {
-                  bc = BillCondiment(),
-                  sc = value,
-                  srvIdLine--,
-                  bc.pkid = srvIdLine,
-                  bc.idline = newLine.idline,
-                  bc.idware = newLine.idware,
-                  bc.idfware = sc.idfware,
-                  bc.idcode = sc.idcode,
-                  bc.idfgroup = sc.idfgroup,
-                  bc.dispname = sc.dispname,
-                  bc.idbill = newLine.idbill,
-                  bc.idcondiment = sc.idcode,
-                  currentBill.root!.billCondiments!.condiment!.add(bc),
+                  lc = value,
+                  for(var element in lc) {
+                    bc = BillCondiment(),
+                    sc = element,
+                    srvIdLine--,
+                    bc.pkid = srvIdLine,
+                    bc.idline = newLine.idline,
+                    bc.idware = newLine.idware,
+                    bc.idfware = sc.idfware,
+                    bc.idcode = sc.idcode,
+                    bc.idfgroup = sc.idfgroup,
+                    bc.dispname = sc.dispname,
+                    bc.idbill = newLine.idbill,
+                    bc.idcondiment = sc.idcode,
+                    currentBill.root!.billCondiments!.condiment!.add(bc),
+                  }
                 }
             });
   }
@@ -232,34 +241,41 @@ bool ifLineInLines(int idWare, int guestNumber) {
 }
 
 Future<bool> saveCurrentBill() async {
-  GetBill? getBill;
-  bool result = false;
-  try {
-    var dio = Dio(BaseOptions(connectTimeout: const Duration(seconds: 15)));
-    String request = 'http://$uri/apim/Bill';
-    final response = await dio.post(request, data: currentBill.toJson());
-    debugPrint(response.data!.toString());
-    if (response.statusCode == 200) {
-      getBill = GetBill.fromJson(response.data);
-      if (getBill.root!.msgStatus != null) {
-        if (getBill.root!.msgStatus!.msg!.idStatus == 0) {
-          currentBill = getBill;
-          if (currentBill.root!.billCondiments!.condiment == null) {
-            currentBill.root!.billCondiments!.condiment = [];
+  if (!savingBill) {
+    savingBill = true;
+    GetBill? getBill;
+    bool result = false;
+    try {
+      var dio = Dio(BaseOptions(connectTimeout: const Duration(seconds: 15)));
+      String request = 'http://$uri/apim/Bill';
+      final response = await dio.post(request, data: currentBill.toJson());
+      debugPrint(response.data!.toString());
+      if (response.statusCode == 200) {
+        getBill = GetBill.fromJson(response.data);
+        if (getBill.root!.msgStatus != null) {
+          if (getBill.root!.msgStatus!.msg!.idStatus == 0) {
+            currentBill = getBill;
+            if (currentBill.root!.billCondiments!.condiment == null) {
+              currentBill.root!.billCondiments!.condiment = [];
+            }
+            result = true;
+          } else {
+            result = false;
           }
-          result = true;
         } else {
           result = false;
         }
       } else {
         result = false;
       }
-    } else {
-      result = false;
+    } catch (e) {
+      debugPrint(e.toString());
+      savingBill = false;
+      return false;
     }
-  } catch (e) {
-    debugPrint(e.toString());
-    return false;
+    savingBill = false;
+    return result;
+  } else {
+    return true;
   }
-  return result;
 }

@@ -8,7 +8,13 @@ class FindWares extends StatefulWidget {
   final List<Line> listToFind;
   final bool canSelect;
 
-  const FindWares({super.key, required this.guestNumber, required this.listToFind, required this.canSelect, });
+  const FindWares({
+    super.key,
+    required this.guestNumber,
+    required this.listToFind,
+    required this.canSelect,
+  });
+
   @override
   State<FindWares> createState() => FindWareState();
 }
@@ -40,39 +46,57 @@ class FindWareState extends State<FindWares> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SizedBox(
-                  width: 250,
-                  child: TextField(
-                    controller: _controller,
-                    style: const TextStyle(
+                width: 250,
+                child: TextField(
+                  controller: _controller,
+                  style: const TextStyle(
                     fontSize: 16,
                     fontFamily: "Montserrat",
                     fontWeight: FontWeight.bold,
                   ),
-                    onChanged: (String value) {
-                      fText = value;
-                    },
-                  ),),
-              IconButton(onPressed: (){
-                listToShow.clear();
-                for (var element in widget.listToFind) {
-                  if (element.dispname != null){
-                    if (element.dispname!.toLowerCase().contains(fText.trim().toLowerCase())){
-                      listToShow.add(element);
+                  onChanged: (String value) {
+                    fText = value;
+                    listToShow.clear();
+                    for (var element in widget.listToFind) {
+                      if (element.dispname != null) {
+                        if (element.dispname!.toLowerCase().contains(fText.trim().toLowerCase())) {
+                          listToShow.add(element);
+                        }
+                      }
                     }
-                  }
-                }
-                setState(() {
-                  FocusScopeNode currentFocus = FocusScope.of(context);
+                    setState(() {
 
-                  if (!currentFocus.hasPrimaryFocus) {
-                    currentFocus.unfocus();
-                  }
-                });
+                    });
+                  },
+                ),
+              ),
+              IconButton(
+                  onPressed: () {
+                    listToShow.clear();
+                    for (var element in widget.listToFind) {
+                      if (element.dispname != null) {
+                        if (element.dispname!.toLowerCase().contains(fText.trim().toLowerCase())) {
+                          listToShow.add(element);
+                        }
+                      }
+                    }
+                    setState(() {
+                      FocusScopeNode currentFocus = FocusScope.of(context);
 
-              }, icon: const Icon(Icons.search)),
+                      if (!currentFocus.hasPrimaryFocus) {
+                        currentFocus.unfocus();
+                      }
+                    });
+                  },
+                  icon: const Icon(Icons.search)),
             ],
           ),
-          Flexible(child: MenuListRegular( guestNumber: widget.guestNumber, listOfLines: listToShow, canSelect: widget.canSelect,))
+          Flexible(
+              child: MenuListRegular(
+            guestNumber: widget.guestNumber,
+            listOfLines: listToShow,
+            canSelect: widget.canSelect,
+          ))
         ],
       ),
     );

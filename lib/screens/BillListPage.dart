@@ -8,9 +8,10 @@ import 'package:restismob/widgets/myFloatingButton.dart';
 
 class BillListPage extends HookWidget {
   final List<Bill?> bills;
+  final VoidCallback voidCallback;
 
 
-  const BillListPage(this.bills, {super.key});
+  const BillListPage(this.bills, this.voidCallback, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -77,6 +78,7 @@ class BillListPage extends HookWidget {
         hColor: lColor,
         kurss: kurss,
         statusB: status,
+        voidCallback: voidCallback,
       ));
     }
     return listaWidget;

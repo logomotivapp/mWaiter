@@ -44,7 +44,7 @@ User userFromJson(String str) => User.fromJson(json.decode(str));
 String userToJson(User data) => json.encode(data.toJson());
 class User {
   User({
-      num? idcode, 
+      int? idcode,
       String? login, 
       String? username, 
       num? idrole, 
@@ -81,7 +81,7 @@ class User {
     _iderror = json['ID_ERROR'];
     _msgerror = json['MSG_ERROR'];
   }
-  num? _idcode;
+  int? _idcode;
   String? _login;
   String? _username;
   num? _idrole;
@@ -92,7 +92,7 @@ class User {
   String? _idcashregnumber;
   num? _iderror;
   String? _msgerror;
-User copyWith({  num? idcode,
+User copyWith({  int? idcode,
   String? login,
   String? username,
   num? idrole,
@@ -115,7 +115,7 @@ User copyWith({  num? idcode,
   iderror: iderror ?? _iderror,
   msgerror: msgerror ?? _msgerror,
 );
-  num? get idcode => _idcode;
+  int? get idcode => _idcode;
   String? get login => _login;
   String? get username => _username;
   num? get idrole => _idrole;

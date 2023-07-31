@@ -28,6 +28,7 @@ class MyHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String? phone;
     return Scaffold(
         backgroundColor: const Color(0xffedf0f1),
         body: Column(
@@ -60,6 +61,13 @@ class MyHome extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     )),
                 onPressed: () {
+                  prefs.then((SharedPreferences prefss) {
+                    phone = prefss.getString('phone')??'';
+                    int minute = prefss.getInt('lastDay')??0;
+                    if ((DateTime.now().millisecondsSinceEpoch - minute) > 300000){
+                      phone = null;
+                    }
+                  });
                   prefs.then((SharedPreferences prefs) {
                     return prefs.getString('ipadress') ?? '81.23.108.42:53537';
                   }).then((value) {
@@ -81,7 +89,7 @@ class MyHome extends StatelessWidget {
                       }
                     }
                     
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => Login()));
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => Login(phone)));
                   });
                 },
               ),

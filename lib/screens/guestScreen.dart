@@ -6,13 +6,15 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:list_ext/list_ext.dart';
 
 import 'package:restismob/global.dart' as global;
-import 'package:restismob/models/localTypes/TextInputAlert.dart';
+import 'package:restismob/models/localTypes/text_input_alert.dart';
 
 import '../models/BillCondiment.dart';
 import '../models/Featured/Fea.dart';
 import '../models/Line.dart';
+import '../models/localTypes/guest_change_alert.dart';
+import '../models/localTypes/kurs_edit.dart';
 import '../models/localTypes/condimAlert.dart';
-import '../models/localTypes/qo_Alert.dart';
+import '../models/localTypes/qo_alert.dart';
 import '../models/menu/Condiment.dart';
 import 'BillImageText.dart';
 import 'MenuWithTab.dart';
@@ -100,12 +102,11 @@ class GuestMeal extends ConsumerWidget {
       ],
     );
 
-    void callBack(){
+    void callBack() {
       ref.invalidate(listGuestProvider);
       //  Navigator.of(context).pop();
       if (listScrollController.hasClients) {
-        final position = listScrollController
-            .position.maxScrollExtent;
+        final position = listScrollController.position.maxScrollExtent;
         listScrollController.jumpTo(position);
       }
     }
@@ -323,6 +324,7 @@ class GuestMeal extends ConsumerWidget {
                                               if (markS) {
                                                 BillCondiment bc;
                                                 Condiment sc;
+                                                List<Condiment> lc = [];
                                                 showDialog(
                                                         builder: (_) => CondAlert(
                                                               condiments: global.menuStructure.menus!
@@ -333,22 +335,26 @@ class GuestMeal extends ConsumerWidget {
                                                     .then((value) => {
                                                           if (value != null)
                                                             {
-                                                              bc = BillCondiment(),
-                                                              sc = value,
-                                                              global.srvIdLine--,
-                                                              bc.pkid = global.srvIdLine,
-                                                              bc.idline = listOfLines[index].idline,
-                                                              bc.idware = listOfLines[index].idware,
-                                                              bc.idfware = sc.idfware,
-                                                              bc.idcode = sc.idcode,
-                                                              bc.idfgroup = sc.idfgroup,
-                                                              bc.dispname = sc.dispname,
-                                                              bc.idbill = listOfLines[index].idbill,
-                                                              bc.idcondiment = sc.idcode,
-                                                              global.currentBill.root!.billCondiments!
-                                                                  .condiment!
-                                                                  .add(bc),
-                                                              ref.invalidate(listGuestProvider),
+                                                              lc = value,
+                                                              for (var element in lc)
+                                                                {
+                                                                  bc = BillCondiment(),
+                                                                  sc = element,
+                                                                  global.srvIdLine--,
+                                                                  bc.pkid = global.srvIdLine,
+                                                                  bc.idline = listOfLines[index].idline,
+                                                                  bc.idware = listOfLines[index].idware,
+                                                                  bc.idfware = sc.idfware,
+                                                                  bc.idcode = sc.idcode,
+                                                                  bc.idfgroup = sc.idfgroup,
+                                                                  bc.dispname = sc.dispname,
+                                                                  bc.idbill = listOfLines[index].idbill,
+                                                                  bc.idcondiment = sc.idcode,
+                                                                  global.currentBill.root!.billCondiments!
+                                                                      .condiment!
+                                                                      .add(bc),
+                                                                  ref.invalidate(listGuestProvider),
+                                                                }
                                                             }
                                                         });
                                               }
@@ -386,25 +392,63 @@ class GuestMeal extends ConsumerWidget {
                                               listOfLines[index].iscomplited = 1;
                                               ref.invalidate(listGuestProvider);
                                             }
+                                            if (item.contains('curse')) {
+                                              if (markS) {
+                                                showDialog(
+                                                        builder: (_) => KursEdit(
+                                                              kurss: listOfLines[index].norder!,
+                                                            ),
+                                                        context: context)
+                                                    .then((value) => {
+                                                          if (value != null)
+                                                            {
+                                                              listOfLines[index].norder = value,
+                                                            }
+                                                        });
+                                              }
+                                            }
+                                            if (item.contains('guest')) {
+                                              showDialog(
+                                                      builder: (_) => GuestAlert(
+                                                            guest: guestNumber,
+                                                          ),
+                                                      context: context)
+                                                  .then((value) => {
+                                                        if (value != null)
+                                                          {
+                                                            listOfLines[index].gnumber = value,
+                                                            if (value >
+                                                                global.currentBill.root!.billHead!.head!
+                                                                    .guestscount)
+                                                              {
+                                                                global.currentBill.root!.billHead!.head!
+                                                                    .guestscount = value
+                                                              },
+                                                            ref.invalidate(listGuestProvider),
+                                                          }
+                                                      });
+                                            }
                                           },
                                           itemBuilder: (BuildContext bc) {
                                             return [
-                                              const PopupMenuItem(
+                                              PopupMenuItem(
                                                 value: '/del',
                                                 child: Column(
                                                   children: [
                                                     Row(
+                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                       children: <Widget>[
-                                                        Text("Удалить"),
-                                                        Spacer(),
-                                                        Icon(
-                                                          Icons.delete_forever_outlined,
-                                                          color: Colors.black45,
+                                                        const Text("Удалить"),
+                                                        //Spacer(),
+                                                        SizedBox(
+                                                          width: 24,
+                                                          height: 24,
+                                                          child: SvgPicture.asset(
+                                                            'assets/images/del.svg',
+                                                            semanticsLabel: 'vector',
+                                                          ),
                                                         ),
                                                       ],
-                                                    ),
-                                                    SizedBox(
-                                                      height: 24,
                                                     ),
                                                   ],
                                                 ),
@@ -412,9 +456,10 @@ class GuestMeal extends ConsumerWidget {
                                               PopupMenuItem(
                                                 value: '/cond',
                                                 child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                   children: <Widget>[
                                                     const Text("Модификатор"),
-                                                    const Spacer(),
+                                                    //const Spacer(),
                                                     SizedBox(
                                                       width: 24,
                                                       height: 24,
@@ -427,11 +472,52 @@ class GuestMeal extends ConsumerWidget {
                                                 ),
                                               ),
                                               PopupMenuItem(
+                                                value: '/curse',
+                                                child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  children: <Widget>[
+                                                    const Text("Курс"),
+                                                    //const Spacer(),
+                                                    SizedBox(
+                                                      width: 24,
+                                                      height: 24,
+                                                      child: SvgPicture.asset(
+                                                        'assets/images/ordered.svg',
+                                                        semanticsLabel: 'vector',
+                                                        colorFilter: const ColorFilter.mode(
+                                                            Colors.black26, BlendMode.srcIn),
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+                                              ),
+                                              PopupMenuItem(
+                                                value: '/guest',
+                                                child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  children: <Widget>[
+                                                    const Text("Гость"),
+                                                    //const Spacer(),
+                                                    SizedBox(
+                                                      width: 24,
+                                                      height: 24,
+                                                      child: SvgPicture.asset(
+                                                        'assets/images/people.svg',
+                                                        semanticsLabel: 'vector',
+                                                        colorFilter: const ColorFilter.mode(
+                                                            Colors.black26, BlendMode.srcIn),
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+                                              ),
+                                              PopupMenuItem(
                                                 value: '/message',
                                                 child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                   children: <Widget>[
                                                     const Text("Комментарий"),
-                                                    const Spacer(),
+                                                    // const Spacer(),
                                                     SizedBox(
                                                       width: 24,
                                                       height: 24,
@@ -443,13 +529,21 @@ class GuestMeal extends ConsumerWidget {
                                                   ],
                                                 ),
                                               ),
-                                              const PopupMenuItem(
+                                              PopupMenuItem(
                                                 value: '/complite',
                                                 child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                   children: <Widget>[
-                                                    Text("Готово"),
-                                                    Spacer(),
-                                                    Icon(Icons.check_circle_outline_sharp),
+                                                    const Text("Готово"),
+                                                    //Spacer(),
+                                                    SizedBox(
+                                                      width: 24,
+                                                      height: 24,
+                                                      child: SvgPicture.asset(
+                                                        'assets/images/ready.svg',
+                                                        semanticsLabel: 'vector',
+                                                      ),
+                                                    ),
                                                   ],
                                                 ),
                                               ),
@@ -561,7 +655,10 @@ class GuestMeal extends ConsumerWidget {
                                 onPressed: () {
                                   showModalBottomSheet<void>(
                                     context: context,
-                                    builder: (context) => FeaList(poplistOfLines: poplistOfLines, voidCallback: callBack,),
+                                    builder: (context) => FeaList(
+                                      poplistOfLines: poplistOfLines,
+                                      voidCallback: callBack,
+                                    ),
                                   );
                                 })
                           ]),
@@ -593,7 +690,7 @@ class GuestMeal extends ConsumerWidget {
   }
 }
 
-class FeaList extends StatefulWidget{
+class FeaList extends StatefulWidget {
   final List<Line> poplistOfLines;
   final VoidCallback voidCallback;
 
@@ -603,7 +700,7 @@ class FeaList extends StatefulWidget{
   State<FeaList> createState() => FeaListState();
 }
 
-class FeaListState extends State<FeaList>{
+class FeaListState extends State<FeaList> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -635,13 +732,16 @@ class FeaListState extends State<FeaList>{
                 itemBuilder: (_, index) => Card(
                   margin: const EdgeInsets.all(5),
                   child: ListTile(
-                    leading: IconButton(onPressed: () {
-                      delWare(widget.poplistOfLines[index]);
-                      global.fea.featuredRoot!.featuredItems!.item!
-                          .removeWhere((element) => element.idware == widget.poplistOfLines[index].idware);
-                      widget.poplistOfLines.removeAt(index);
-                      setState(() {});
-                    }, icon: const Icon(Icons.remove_moderator_outlined),),
+                      leading: IconButton(
+                        onPressed: () {
+                          delWare(widget.poplistOfLines[index]);
+                          global.fea.featuredRoot!.featuredItems!.item!.removeWhere(
+                              (element) => element.idware == widget.poplistOfLines[index].idware);
+                          widget.poplistOfLines.removeAt(index);
+                          setState(() {});
+                        },
+                        icon: const Icon(Icons.remove_moderator_outlined),
+                      ),
                       title: Text(widget.poplistOfLines[index].dispname!,
                           style: const TextStyle(
                             color: Colors.black45,
@@ -651,19 +751,17 @@ class FeaListState extends State<FeaList>{
                           )),
                       //  subtitle: Text(_items[index]['subtitle']),
                       trailing: IconButton(
-                        icon: global.ifLineInLines(
-                            widget.poplistOfLines[index].idware!, guestNumber)
+                        icon: global.ifLineInLines(widget.poplistOfLines[index].idware!, guestNumber)
                             ? const Icon(
-                          Icons.check_circle,
-                          color: Color(0xff1A69A3),
-                        )
+                                Icons.check_circle,
+                                color: Color(0xff1A69A3),
+                              )
                             : (widget.poplistOfLines[index].quantity! < 0
-                            ? const Icon(Icons.block, color: Colors.red)
-                            : const Icon(Icons.add_circle_outline)),
+                                ? const Icon(Icons.block, color: Colors.red)
+                                : const Icon(Icons.add_circle_outline)),
                         onPressed: () {
                           if (widget.poplistOfLines[index].quantity! < 0) {
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(const SnackBar(
+                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                                 backgroundColor: Colors.redAccent,
                                 content: Text(
                                   'Бдюдо в стоп листе',
@@ -674,23 +772,18 @@ class FeaListState extends State<FeaList>{
                                 )));
                           } else {
                             showDialog(
-                                builder: (_) => QoAlert(
-                                    guest: guestNumber,
-                                    ware: widget.poplistOfLines[index]
-                                        .dispname!),
-                                context: context)
+                                    builder: (_) => QoAlert(
+                                        guest: guestNumber, ware: widget.poplistOfLines[index].dispname!),
+                                    context: context)
                                 .then((value) {
                               if (value != null) {
-                                global.addNewLine(widget.poplistOfLines[index],
-                                    value[2], value[0], value[1], context);
-                                if (value[2] >
-                                    global.currentBill.root!.billHead!.head!
-                                        .guestscount) {
-                                  global.currentBill.root!.billHead!.head!
-                                      .guestscount = value[2];
+                                global.addNewLine(
+                                    widget.poplistOfLines[index], value[2], value[0], value[1], context);
+                                if (value[2] > global.currentBill.root!.billHead!.head!.guestscount) {
+                                  global.currentBill.root!.billHead!.head!.guestscount = value[2];
                                 }
                                 widget.voidCallback();
-                                setState(() { });
+                                setState(() {});
                               }
                             });
                           }
@@ -732,7 +825,6 @@ class FeaListState extends State<FeaList>{
       behavior: SnackBarBehavior.floating,
     ));
   }
-
 }
 
 class GuestScreen extends StatefulWidget {

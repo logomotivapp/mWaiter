@@ -6,7 +6,7 @@ import 'package:restismob/global.dart' as global;
 import 'package:restismob/models/Featured/Item.dart';
 import '../models/Featured/Fea.dart';
 import '../models/Line.dart';
-import '../models/localTypes/qo_Alert.dart';
+import '../models/localTypes/qo_alert.dart';
 
 class MenuListRegular extends StatefulWidget {
   final int guestNumber;
@@ -109,7 +109,7 @@ class MenuListRegularState extends State<MenuListRegular> {
                                     behavior: SnackBarBehavior.floating,
                                       backgroundColor: Colors.black54,
                                       content: Text(
-                                        'Добавлено блюдо \n${widget.listOfLines[index].dispname!} \n порций ${widget.listOfLines[index].quantity} курс ${widget.listOfLines[index].norder}',
+                                        'Добавлено блюдо \n${widget.listOfLines[index].dispname!} \n порций ${value[0]} курс ${value[1]}',
                                         style: const TextStyle(
                                           fontSize: 18,
                                         ),

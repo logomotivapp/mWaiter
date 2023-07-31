@@ -5,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:restismob/screens/BillListPage.dart';
 import 'package:focus_detector/focus_detector.dart';
 import 'package:restismob/screens/tablesList.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../global.dart';
 import '../models/Featured/Fea.dart';
@@ -51,8 +52,18 @@ class PreBillListHome extends ConsumerState<PreBillList> with WidgetsBindingObse
       case AppLifecycleState.paused:
       case AppLifecycleState.inactive:
       case AppLifecycleState.detached:
+        {
+          final Future<SharedPreferences> prefs = SharedPreferences.getInstance();
+          prefs.then((SharedPreferences prefss) {
+            prefss.setInt('lastDay', DateTime.now().millisecondsSinceEpoch);
+          });
+        }
         break;
     }
+  }
+
+  void callBack() {
+    ref.invalidate(listProvider);
   }
 
   @override
@@ -60,7 +71,7 @@ class PreBillListHome extends ConsumerState<PreBillList> with WidgetsBindingObse
     int percent = ref.watch(global.percentProvider);
     var menuStructure = ref.watch(menuProvider);
     ref.watch(feaProvider);
-   // global.srvIdLine = 0;
+    // global.srvIdLine = 0;
     var appBar = AppBar(
       backgroundColor: const Color(0xff68a3ab),
       toolbarHeight: 96,
@@ -115,48 +126,95 @@ class PreBillListHome extends ConsumerState<PreBillList> with WidgetsBindingObse
                       ),
                       Row(children: <Widget>[
                         SizedBox(
-                          width: 36,
-                          height: 36,
+                          width: 24,
+                          height: 24,
                           child: SvgPicture.asset(
                             'assets/images/man.svg',
                             semanticsLabel: 'vector',
                           ),
                         ),
-                        Text(
-                          global.waiter.user!.username!,
-                          maxLines: 2,
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width / 3.5,
+                          child: Text(
+                            global.waiter.user!.username!,
+                            maxLines: 2,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontFamily: "Montserrat",
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         )
                       ]),
                     ],
                   )),
-              const PopupMenuItem(
+              PopupMenuItem(
                   value: '/menur',
                   child: Row(children: <Widget>[
-                    Text('Меню'),
-                    Spacer(),
-                    Icon(
-                      Icons.menu_book,
-                      color: Colors.black45,
+                    const Text(
+                      'Меню',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 14,
+                        //height: 12 / 10,
+                        fontFamily: "Roboto",
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const Spacer(),
+                    SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: SvgPicture.asset(
+                        'assets/images/openbook.svg',
+                        semanticsLabel: 'vector',
+                      ),
                     ),
                   ])),
-              const PopupMenuItem(
+              PopupMenuItem(
                   value: '/tabler',
                   child: Row(children: <Widget>[
-                    Text('Столы'),
-                    Spacer(),
-                    Icon(
-                      Icons.list,
-                      color: Colors.black45,
+                    const Text(
+                      'Столы',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 14,
+                        //height: 12 / 10,
+                        fontFamily: "Roboto",
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const Spacer(),
+                    SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: SvgPicture.asset(
+                        'assets/images/tables.svg',
+                        semanticsLabel: 'vector',
+                      ),
                     ),
                   ])),
-              const PopupMenuItem(
+              PopupMenuItem(
                   value: '/settr',
                   child: Row(children: <Widget>[
-                    Text('Настройки'),
-                    Spacer(),
-                    Icon(
-                      Icons.settings,
-                      color: Colors.black45,
+                    const Text(
+                      'Настройки',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 14,
+                        // height: 12 / 10,
+                        fontFamily: "Roboto",
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const Spacer(),
+                    SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: SvgPicture.asset(
+                        'assets/images/setting.svg',
+                        semanticsLabel: 'vector',
+                      ),
                     ),
                   ])),
             ];
@@ -168,7 +226,7 @@ class PreBillListHome extends ConsumerState<PreBillList> with WidgetsBindingObse
           textAlign: TextAlign.start,
           style: TextStyle(
             fontSize: 22,
-            height: 27/22,
+            height: 27 / 22,
             fontFamily: "Montserrat",
             fontWeight: FontWeight.w700,
           ),
@@ -193,10 +251,12 @@ class PreBillListHome extends ConsumerState<PreBillList> with WidgetsBindingObse
                 indicatorWeight: 6.0,
                 indicatorColor: Colors.white,
                 indicatorSize: TabBarIndicatorSize.tab,
-                labelStyle: TextStyle(fontFamily: 'Montserrat',
+                labelStyle: TextStyle(
+                  fontFamily: 'Montserrat',
                   fontSize: 14,
                   letterSpacing: 0,
-                  fontWeight: FontWeight.w700,),
+                  fontWeight: FontWeight.w700,
+                ),
                 tabs: [
                   Tab(
                     text: 'ВСЕ',
@@ -220,6 +280,7 @@ class PreBillListHome extends ConsumerState<PreBillList> with WidgetsBindingObse
       },
       child: WillPopScope(
         onWillPop: () async {
+          final Future<SharedPreferences> prefs = SharedPreferences.getInstance();
           final shouldPop = await showDialog<bool>(
             context: context,
             builder: (context) {
@@ -229,6 +290,9 @@ class PreBillListHome extends ConsumerState<PreBillList> with WidgetsBindingObse
                 actions: [
                   TextButton(
                     onPressed: () {
+                      prefs.then((SharedPreferences prefss) {
+                        prefss.setInt('lastDay', DateTime.now().millisecondsSinceEpoch);
+                      });
                       Navigator.pop(context, true);
                     },
                     child: const Text('Да'),
@@ -257,8 +321,8 @@ class PreBillListHome extends ConsumerState<PreBillList> with WidgetsBindingObse
                 ),
                 body: TabBarView(
                   children: [
-                    PreBillListList(widget.waiterId),
-                    PreBillListListMy(widget.waiterId),
+                    PreBillListList(widget.waiterId, callBack),
+                    PreBillListListMy(widget.waiterId, callBack),
                   ],
                 ),
               ),
@@ -302,8 +366,9 @@ class PreBillListHome extends ConsumerState<PreBillList> with WidgetsBindingObse
 }
 
 class PreBillListList extends ConsumerWidget {
-  const PreBillListList(this.waiterId, {super.key});
+  const PreBillListList(this.waiterId, this.voidCallback, {super.key});
 
+  final VoidCallback voidCallback;
   final num waiterId;
 
   @override
@@ -328,7 +393,7 @@ class PreBillListList extends ConsumerWidget {
                 if (billList.isEmpty) {
                   return const EmptyBillList();
                 } else {
-                  return BillListPage(billList);
+                  return BillListPage(billList, voidCallback);
                 }
               } else {
                 return const EmptyBillList();
@@ -346,8 +411,9 @@ class PreBillListList extends ConsumerWidget {
 }
 
 class PreBillListListMy extends ConsumerWidget {
-  const PreBillListListMy(this.waiterId, {super.key});
+  const PreBillListListMy(this.waiterId, this.voidCallback, {super.key});
 
+  final VoidCallback voidCallback;
   final num waiterId;
 
   @override
@@ -373,7 +439,7 @@ class PreBillListListMy extends ConsumerWidget {
                 if (billList.isEmpty) {
                   return const EmptyBillList();
                 } else {
-                  return BillListPage(billList);
+                  return BillListPage(billList, voidCallback);
                 }
               } else {
                 return const EmptyBillList();

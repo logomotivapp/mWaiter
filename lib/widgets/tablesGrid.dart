@@ -35,7 +35,7 @@ class TablesGrid extends StatelessWidget {
           ),
           Flexible(
             child: GridView.count(
-              padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
+              padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
               shrinkWrap: true,
               crossAxisCount: 5,
               crossAxisSpacing: 10,
@@ -53,7 +53,7 @@ class TablesGrid extends StatelessWidget {
     for (var element in lista) {
       listaWidget.add(TablesTableItem(
         tableNumber: element!.tablenumber,
-        isUsed: element.isused,
+        isUsed: element.tablenumber >= 0 ? element.isused : 0,
       ));
     }
     return listaWidget;

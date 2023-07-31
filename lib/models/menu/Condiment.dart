@@ -1,11 +1,12 @@
 class Condiment {
   Condiment({
-      this.idcode, 
-      this.vorder, 
-      this.dispname, 
-      this.idfware, 
-      this.idfgroup, 
-      this.idware,});
+    this.idcode,
+    this.vorder,
+    this.dispname,
+    this.idfware,
+    this.idfgroup,
+    this.idware,
+  });
 
   Condiment.fromJson(dynamic json) {
     idcode = json['ID_CODE'];
@@ -15,6 +16,7 @@ class Condiment {
     idfgroup = json['ID_FGROUP'];
     idware = json['ID_WARE'];
   }
+
   int? idcode;
   int? vorder;
   String? dispname;
@@ -32,5 +34,4 @@ class Condiment {
     map['ID_WARE'] = idware;
     return map;
   }
-
 }

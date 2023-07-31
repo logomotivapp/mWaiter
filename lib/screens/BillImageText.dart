@@ -42,6 +42,9 @@ class BillImageText extends StatelessWidget {
   List<Widget> listOfStrings(BuildContext context) {
     List<Widget> listsOfWidgets = [];
     int commonG = 1;
+    int currentCurs = 0;
+    int index = 0;
+    int currentGuest = -1;
     if (guestHaveLine(0)) {
       commonG = 0;
     }
@@ -51,44 +54,57 @@ class BillImageText extends StatelessWidget {
       }
       listsOfWidgets.add(
         Text(
-          i == 0 ? '  Общий ' :  '  Гость $i',
+          i == 0 ? '  Общий ' : '  Гость $i',
           style: const TextStyle(
-              fontSize: 18, fontFamily: "Montserrat", fontWeight: FontWeight.w800, color: Colors.blueAccent),
+              fontSize: 18, fontFamily: "Roboto", fontWeight: FontWeight.w800, color: Colors.blueAccent),
         ),
       );
       List<Line> listOfLine = global.currentBill.root!.billLines!.line!
-          .where((element) => (element.gnumber == i) && (element.idfline == 0))
+          .where((element) => (element.gnumber == i) && (element.idfline == 0) && (element.quantity! > 0))
           .toList();
+      listOfLine.sort((a, b) => a.norder!.compareTo(b.norder!));
       for (var element in listOfLine) {
+        index++;
+        if (element.norder != currentCurs || currentGuest != i){
+          currentCurs = element.norder!;
+          currentGuest = i;
+          listsOfWidgets.add(
+            Text('    Курс : $currentCurs',  style: const TextStyle(
+                fontSize: 16, fontFamily: "Roboto", fontWeight: FontWeight.w800, color: Colors.lightBlueAccent),));
+        }
         listsOfWidgets.add(
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Flexible(
-                flex: 7,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
-                  child: Text(
-                    element.dispname!,
-                    maxLines: 2,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontFamily: "Montserrat",
-                      fontWeight: FontWeight.w800,
+          Container(
+            decoration: BoxDecoration(color: index.isOdd ? Color(0xffF5F2F1) : Color(0xffFDFBFA)),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Flexible(
+                  flex: 7,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+                    child: Text(
+                      element.dispname!,
+                      maxLines: 2,
+                      textAlign: TextAlign.start,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontFamily: "Roboto",
+                        fontWeight: FontWeight.w800,
                         overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Flexible(
-                flex: 3,
-                child: Text(
-                  'порц. ${element.quantity}  ',
-                  style: const TextStyle(fontSize: 16, fontFamily: "Montserrat", fontWeight: FontWeight.w800),
-                ),
-              )
-            ],
+                Flexible(
+                  flex: 3,
+                  child: Text(
+                    'пц. ${element.quantity} ',
+                    style: const TextStyle(fontSize: 16, fontFamily: "Roboto", fontWeight: FontWeight.w800),
+                  ),
+                )
+              ],
+            ),
           ),
         );
         List<BillCondiment> conds = global.currentBill.root!.billCondiments!.condiment!
@@ -105,7 +121,7 @@ class BillImageText extends StatelessWidget {
                   Text('${element3.dispname!}  ',
                       style: const TextStyle(
                           fontSize: 16,
-                          fontFamily: "Montserrat",
+                          fontFamily: "Roboto",
                           fontWeight: FontWeight.w800,
                           overflow: TextOverflow.ellipsis,
                           color: Colors.grey)),
