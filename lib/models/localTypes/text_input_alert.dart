@@ -34,6 +34,7 @@ class TextInputAlertState extends State<TextInputAlert> {
           TextField(
             keyboardType: widget.textInputType,
             controller: controller,
+            autofocus: true,
             style: const TextStyle(
               fontSize: 22,
               fontFamily: "Montserrat",

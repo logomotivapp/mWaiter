@@ -241,7 +241,7 @@ bool ifLineInLines(int idWare, int guestNumber) {
 }
 
 Future<bool> saveCurrentBill() async {
-  if (!savingBill) {
+  if (!savingBill && currentBill.root!.billHead != null) {
     savingBill = true;
     GetBill? getBill;
     bool result = false;

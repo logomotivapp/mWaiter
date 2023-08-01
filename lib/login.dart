@@ -174,6 +174,7 @@ class Login extends ConsumerWidget {
           alignment: Alignment.center,
           child: TextField(
             controller: controller,
+            autofocus: true,
             onChanged: (value) {
               ref.read(controllerProvider.notifier).state = value;
             },

@@ -67,10 +67,13 @@ class _CurrentBillState extends ConsumerState<CurrentBill> with WidgetsBindingOb
         global.currentBill.root!.msgStatus!.msg!.idStatus = 0;
         delEmpty();
         var result = global.saveCurrentBill();
-        result.then((value) => {Navigator.popUntil(context, (route) => route.settings.name == "/prebills")});
+        result.then((value) => {
+          if (mounted) {Navigator.popUntil(context, (route) => route.settings.name == "/prebills")}});
+        break;
+      case AppLifecycleState.resumed:
+        Navigator.popUntil(context, (route) => route.settings.name == "/prebills");
         break;
       case AppLifecycleState.inactive:
-      case AppLifecycleState.resumed:
       case AppLifecycleState.detached:
         break;
     }

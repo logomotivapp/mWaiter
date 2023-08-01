@@ -49,6 +49,7 @@ class FindWareState extends State<FindWares> {
                 width: 250,
                 child: TextField(
                   controller: _controller,
+                  autofocus: true,
                   style: const TextStyle(
                     fontSize: 16,
                     fontFamily: "Montserrat",
