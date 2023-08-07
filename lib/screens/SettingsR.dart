@@ -3,7 +3,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:package_info/package_info.dart';
 import 'package:restismob/models/localTypes/text_input_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter/foundation.dart';
 
 import 'package:restismob/global.dart' as global;
 
@@ -44,19 +43,19 @@ class SettingsRState extends State<SettingsR> {
       return prefs.getString('ipadress') ?? ' Не задан';
     }).then((value) {
       value.isNotEmpty ? global.uri = value : global.uri = ' Не задан';
-      if (kReleaseMode) {
-        if (global.uri.contains('Не задан') || global.uri.isEmpty) {
-          global.uri = '81.23.108.42:53537';
-        }
+      //     if (kReleaseMode) {
+      if (global.uri.contains('Не задан') || global.uri.isEmpty) {
+        global.uri = '81.23.108.42:53537';
+//        }
       }
 
-      if (kDebugMode) {
-        if (global.uri.contains('Не задан') ||
-            global.uri.contains('81.23.108') ||
-            global.uri.trim().isEmpty) {
-          global.uri = '192.168.1.33:90';
-        }
-      }
+      //    if (kDebugMode) {
+      //     if (global.uri.contains('Не задан') ||
+      //         global.uri.contains('81.23.108') ||
+      //         global.uri.trim().isEmpty) {
+      //       global.uri = '192.168.1.33:90';
+      //    }
+      //  }
     });
   }
 
@@ -110,7 +109,8 @@ class SettingsRState extends State<SettingsR> {
       body: Column(
         children: [
           Card(
-              margin: const EdgeInsets.all(5), child: _infoTile('Версия приложения :', _packageInfo.version)),
+              margin: const EdgeInsets.all(5),
+              child: _infoTile('Версия приложения :', '${_packageInfo.version}+${_packageInfo.buildNumber}')),
           Card(
             margin: const EdgeInsets.all(5),
             child: ListTile(
@@ -120,10 +120,10 @@ class SettingsRState extends State<SettingsR> {
               ),
               subtitle: Text(
                 (global.uri.contains('Не задан') ||
-                    global.uri.contains('81.23.108') ||
-                    global.uri.trim().isEmpty)
-                ?'Не задан'
-                :global.uri,
+                        global.uri.contains('81.23.108') ||
+                        global.uri.trim().isEmpty)
+                    ? 'Не задан'
+                    : global.uri,
                 style: widget.subtitleStyle,
               ),
               trailing: widget.canEdit
@@ -138,11 +138,13 @@ class SettingsRState extends State<SettingsR> {
                                     {
                                       _prefs.then((SharedPreferences prefs) {
                                         prefs.setString('ipadress', value).then(
-                                              (bool success) => global.uri = value,
+                                              (bool success) => {
+                                                global.uri = value,
+                                                setState(() {}),
+                                              },
                                             );
                                       }),
                                     },
-                                  setState(() {}),
                                 });
                       })
                   : const Text(''),
