@@ -128,7 +128,9 @@ class ComplexToSelectState extends State<ComplexToSelect> {
                                       )
                                     : const Icon(Icons.check_box_outline_blank_rounded),
                                 onPressed: () {
-                                  selectedLines[itemLines[index].idcomplexline!] = itemLines[index];
+                                  Line ls = itemLines[index];
+                                  ls.idline = global.srvIdLine--;
+                                  selectedLines[itemLines[index].idcomplexline!] = ls;
                                   setState(() {});
                                 },
                               ),
