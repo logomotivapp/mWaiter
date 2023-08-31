@@ -17,7 +17,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: MyHome());
+    return MaterialApp(home: MyHome(),
+      initialRoute: '/',);
   }
 }
 
@@ -62,7 +63,7 @@ class MyHome extends StatelessWidget {
                     )),
                 onPressed: () {
                   prefs.then((SharedPreferences prefss) {
-                    phone = prefss.getString('phone')??'';
+                    global.telNum = prefss.getString('phone')??'';
                     int minute = prefss.getInt('lastDay')??0;
                     if ((DateTime.now().millisecondsSinceEpoch - minute) > 300000){
                       phone = null;

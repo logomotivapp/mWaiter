@@ -21,7 +21,7 @@ MenuStructure menuStructure = MenuStructure();
 Waiter waiter = Waiter();
 GetBill currentBill = GetBill();
 String uri = ''; //81.23.108.42:53537
-String telNum = "";
+String? telNum;
 BuildContext? context1;
 WidgetRef? ref1;
 bool isLoading = false;
@@ -30,7 +30,6 @@ int srvIdLine = 0;
 Fea fea = Fea();
 bool isSnackbarActive = false;
 int lastSelectedGroup = -1;
-int lastLoginDay = 0;
 bool savingBill = false;
 bool markSending = false;
 

@@ -13,6 +13,7 @@ import 'global.dart' as global;
 
 class Login extends ConsumerWidget {
   final String? phone;
+
   Login(this.phone, {super.key});
 
   final controller = TextEditingController();
@@ -51,25 +52,27 @@ class Login extends ConsumerWidget {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const SettingsR(
-                            canEdit: true,
-                          )));
+                      builder: (context) =>
+                      const SettingsR(
+                        canEdit: true,
+                      )));
             },
             icon: const Icon(Icons.settings))
       ],
     );
-    
+
     return Scaffold(
       appBar: appBar,
       body: Container(
         alignment: Alignment.center,
-        height: (MediaQuery.of(context).size.height - appBar.preferredSize.height) / 2,
+        height: (MediaQuery
+            .of(context)
+            .size
+            .height - appBar.preferredSize.height) / 2,
         child: Column(
           children: <Widget>[
             const Spacer(),
-            phone == null
-            ?_buildTextFields(ref)
-            : _oldPhone(ref),
+            phone == null ? _buildTextFields(ref) : _oldPhone(ref),
             const Spacer(),
             MyFloatingBunnon(
               width: 245,
@@ -91,9 +94,12 @@ class Login extends ConsumerWidget {
     Waiter employee;
     try {
       String version = info.version;
-      global.ref1?.read(loadProvider.notifier).state = true;
+      global.ref1
+          ?.read(loadProvider.notifier)
+          .state = true;
       var dio = Dio(BaseOptions(connectTimeout: const Duration(seconds: 15)));
-      String request = 'http://${global.uri}/apim/GetUser?Phone=${global.telNum.trim()}&sVersion=$version';
+      String request =
+          'http://${global.uri}/apim/GetUser?Phone=${global.telNum!.trim()}&sVersion=$version';
       // final response = await  dio.get('http://10.0.2.2:53535/apim/GetUser?Phone=79211234567');
       final response = await dio.get(request);
       debugPrint(response.data!.toString());
@@ -101,20 +107,24 @@ class Login extends ConsumerWidget {
         employee = Waiter.fromJson(response.data);
         if (employee.user!.iderror == 0) {
           waiter = employee;
-          global.ref1?.read(loadProvider.notifier).state = false;
+          global.ref1
+              ?.read(loadProvider.notifier)
+              .state = false;
 
           prefs.then((SharedPreferences prefss) {
-            prefss.setString('phone', global.telNum.trim());
-            prefss.setInt('lastDay', DateTime.now().millisecondsSinceEpoch);
+            prefss.setString('phone', global.telNum!.trim());
+            prefss.setInt('lastDay', DateTime
+                .now()
+                .millisecondsSinceEpoch);
           });
-          if (waiter.user!.idcashregister == null || waiter.user!.idcashregister!  <= 0) {
+          if (waiter.user!.idcashregister == null || waiter.user!.idcashregister! <= 0) {
             ScaffoldMessenger.of(context1!).showSnackBar(const SnackBar(
-                content: Center(
-                  child: Text(
-              'Не назначена касса',
-              style: TextStyle(color: Colors.yellowAccent),
-            ),
+              content: Center(
+                child: Text(
+                  'Не назначена касса',
+                  style: TextStyle(color: Colors.yellowAccent),
                 ),
+              ),
               backgroundColor: Colors.redAccent,
             ));
           }
@@ -126,10 +136,15 @@ class Login extends ConsumerWidget {
                   settings: const RouteSettings(name: "/prebills")));
         } else {
           waiter = Waiter();
-          global.ref1?.read(loadProvider.notifier).state = false;
+          global.ref1
+              ?.read(loadProvider.notifier)
+              .state = false;
           String msg = 'ОШИБКА !!!';
           if (employee.user!.msgerror != null) {
             msg = employee.user!.msgerror!;
+            prefs.then((SharedPreferences prefss) {
+              prefss.remove('phone');
+            });
           }
           final snackBar = SnackBar(
             backgroundColor: const Color(0xffFF6392),
@@ -141,14 +156,18 @@ class Login extends ConsumerWidget {
           ScaffoldMessenger.of(context1!).showSnackBar(snackBar);
         }
       } else {
-        global.ref1?.read(loadProvider.notifier).state = false;
+        global.ref1
+            ?.read(loadProvider.notifier)
+            .state = false;
         ScaffoldMessenger.of(context1!).showSnackBar(const SnackBar(content: Text('ОЙ! Всё сломалось')));
         throw Exception("Cannot get user");
       }
       global.isLoading = false;
     } catch (e) {
       debugPrint(e.toString());
-      global.ref1?.read(loadProvider.notifier).state = false;
+      global.ref1
+          ?.read(loadProvider.notifier)
+          .state = false;
       ScaffoldMessenger.of(context1!).showSnackBar(const SnackBar(
         content: Text('Нет подключения'),
         backgroundColor: Colors.redAccent,
@@ -156,14 +175,18 @@ class Login extends ConsumerWidget {
     }
   }
 
-  Widget _oldPhone(WidgetRef ref){
-    global.telNum = phone??'';
-    return const Text('Пока помним номер', style: TextStyle(
-      fontFamily: 'Montserrat',
-      fontSize: 24,
-      letterSpacing: 0,
-      fontWeight: FontWeight.w700,
-    ),);
+
+  Widget _oldPhone(WidgetRef ref) {
+    global.telNum = phone ?? '';
+    return const Text(
+      'Пока помним номер',
+      style: TextStyle(
+        fontFamily: 'Montserrat',
+        fontSize: 24,
+        letterSpacing: 0,
+        fontWeight: FontWeight.w700,
+      ),
+    );
   }
 
   Widget _buildTextFields(WidgetRef ref) {
@@ -176,7 +199,9 @@ class Login extends ConsumerWidget {
             controller: controller,
             autofocus: true,
             onChanged: (value) {
-              ref.read(controllerProvider.notifier).state = value;
+              ref
+                  .read(controllerProvider.notifier)
+                  .state = value;
             },
             style: const TextStyle(
               fontSize: 40,

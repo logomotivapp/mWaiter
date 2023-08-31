@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:package_info/package_info.dart';
@@ -40,6 +41,7 @@ class SettingsRState extends State<SettingsR> {
     super.initState();
     _initPackageInfo();
     _prefs.then((SharedPreferences prefs) {
+      global.telNum = prefs.getString('phone') ?? '';
       return prefs.getString('ipadress') ?? ' Не задан';
     }).then((value) {
       value.isNotEmpty ? global.uri = value : global.uri = ' Не задан';
@@ -150,6 +152,22 @@ class SettingsRState extends State<SettingsR> {
                   : const Text(''),
             ),
           ),
+          global.telNum!.isNotEmpty
+              ? OutlinedButton(
+                  onPressed: () {
+                    _prefs.then((SharedPreferences prefss) {
+                      prefss.remove('phone');
+                    });
+                    delWaiter();
+                  },
+                  child: const Text('Удалить профиль',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 18,
+                        fontFamily: "Montserrat",
+                        fontWeight: FontWeight.bold,
+                      )))
+              : Container(),
           const Spacer(
             flex: 2,
           ),
@@ -181,5 +199,31 @@ class SettingsRState extends State<SettingsR> {
         ],
       ),
     );
+  }
+
+  Future<void> delWaiter() async {
+    final PackageInfo info = await PackageInfo.fromPlatform();
+    String version = info.version;
+    var dio = Dio(BaseOptions(connectTimeout: const Duration(seconds: 15)));
+    String request = 'http://${global.uri}/apim/DelUser?Phone=${global.telNum!.trim()}&sVersion=$version';
+    // final response = await  dio.get('http://10.0.2.2:53535/apim/GetUser?Phone=79211234567');
+    final response = await dio.get(request);
+    debugPrint(response.data!.toString());
+    if (response.statusCode == 200) {
+      goOut();
+    }
+  }
+
+  void goOut() {
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      content: Center(
+        child: Text(
+          'Профиль удалён',
+          style: TextStyle(color: Colors.yellowAccent),
+        ),
+      ),
+      backgroundColor: Colors.redAccent,
+    ));
+    Navigator.popUntil(context, (route) => route.settings.name == "/");
   }
 }
