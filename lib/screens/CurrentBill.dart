@@ -37,7 +37,8 @@ final commonGuestsProvider = StateProvider<int>((ref) {
 });
 
 class CurrentBill extends ConsumerStatefulWidget {
-  const CurrentBill(this.billNum, {
+  const CurrentBill(
+    this.billNum, {
     Key? key,
   }) : super(key: key);
 
@@ -51,6 +52,7 @@ class _CurrentBillState extends ConsumerState<CurrentBill> with WidgetsBindingOb
   @override
   initState() {
     super.initState();
+    global.currentBill.root = null;
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -68,7 +70,8 @@ class _CurrentBillState extends ConsumerState<CurrentBill> with WidgetsBindingOb
         delEmpty();
         var result = global.saveCurrentBill();
         result.then((value) => {
-          if (mounted) {Navigator.popUntil(context, (route) => route.settings.name == "/prebills")}});
+              if (mounted) {Navigator.popUntil(context, (route) => route.settings.name == "/prebills")}
+            });
         break;
       case AppLifecycleState.resumed:
         Navigator.popUntil(context, (route) => route.settings.name == "/prebills");
@@ -99,25 +102,24 @@ class _CurrentBillState extends ConsumerState<CurrentBill> with WidgetsBindingOb
     global.currentBill.root!.msgStatus!.msg!.idStatus = 1;
     LoadingIndicatorDialog().show(context, text: 'Отправляю и обновляю');
     var result = global.saveCurrentBill();
-    result.then((value) =>
-    {
-      if (!value)
-        {
-          LoadingIndicatorDialog().dismiss(),
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text(
-              'Счет не сохранился !!!',
-            ),
-            backgroundColor: Color(0xffFF6392),
-          )),
-        }
-      else
-        {
-          //  ref.invalidate(billProvider),
-          LoadingIndicatorDialog().dismiss(),
-        },
-      global.markSending = false,
-    });
+    result.then((value) => {
+          if (!value)
+            {
+              LoadingIndicatorDialog().dismiss(),
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                content: Text(
+                  'Счет не сохранился !!!',
+                ),
+                backgroundColor: Color(0xffFF6392),
+              )),
+            }
+          else
+            {
+              //  ref.invalidate(billProvider),
+              LoadingIndicatorDialog().dismiss(),
+            },
+          global.markSending = false,
+        });
   }
 
   @override
@@ -165,19 +167,18 @@ class _CurrentBillState extends ConsumerState<CurrentBill> with WidgetsBindingOb
         global.currentBill.root!.msgStatus!.msg!.idStatus = 0;
         LoadingIndicatorDialog().show(context);
         var result = global.saveCurrentBill();
-        result.then((value) =>
-        {
-          LoadingIndicatorDialog().dismiss(),
-          if (!value)
-            {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                content: Text(
-                  'Счет не сохранился !!!',
-                ),
-                backgroundColor: Color(0xffFF6392),
-              ))
-            }
-        });
+        result.then((value) => {
+              LoadingIndicatorDialog().dismiss(),
+              if (!value)
+                {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text(
+                      'Счет не сохранился !!!',
+                    ),
+                    backgroundColor: Color(0xffFF6392),
+                  ))
+                }
+            });
         return result;
       },
       child: Scaffold(
@@ -205,8 +206,8 @@ class _CurrentBillState extends ConsumerState<CurrentBill> with WidgetsBindingOb
                     commonGuest = 1;
                   }
                   for (int i = 1;
-                  i <= gNs; //currentBill.root!.billHead!.head!.guestscount!;
-                  i++) {
+                      i <= gNs; //currentBill.root!.billHead!.head!.guestscount!;
+                      i++) {
                     items.add({'i': i, 'gN': 'Гость $i'});
                   }
                   return Column(
@@ -227,25 +228,24 @@ class _CurrentBillState extends ConsumerState<CurrentBill> with WidgetsBindingOb
                             child: ListView.builder(
                               controller: scrollController,
                               itemCount: items.length,
-                              itemBuilder: (_, index) =>
-                                  Card(
-                                    margin: const EdgeInsets.all(5),
-                                    child: ListTile(
-                                        title: Text(items[index]['gN'],
-                                            style: const TextStyle(
-                                              fontSize: 14,
-                                              fontFamily: "Montserrat",
-                                              fontWeight: FontWeight.w800,
-                                            )),
-                                        //  subtitle: Text(_items[index]['subtitle']),
-                                        trailing: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            !guestHaveLine(index + commonGuest) && ((index + commonGuest) > 1)
-                                                ? IconButton(
+                              itemBuilder: (_, index) => Card(
+                                margin: const EdgeInsets.all(5),
+                                child: ListTile(
+                                    title: Text(items[index]['gN'],
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          fontFamily: "Montserrat",
+                                          fontWeight: FontWeight.w800,
+                                        )),
+                                    //  subtitle: Text(_items[index]['subtitle']),
+                                    trailing: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        !guestHaveLine(index + commonGuest) && ((index + commonGuest) > 1)
+                                            ? IconButton(
                                                 onPressed: () {
                                                   for (var element
-                                                  in global.currentBill.root!.billLines!.line!) {
+                                                      in global.currentBill.root!.billLines!.line!) {
                                                     if (element.gnumber! > index) {
                                                       element.gnumber = element.gnumber! - 1;
                                                     }
@@ -253,61 +253,57 @@ class _CurrentBillState extends ConsumerState<CurrentBill> with WidgetsBindingOb
                                                   gNs--;
                                                   currentBillData.root!.billHead!.head!.guestscount = gNs;
                                                   global.ref1!.read(numGuestsProvider.notifier).state =
-                                                  global.currentBill.root!.billHead!.head!.guestscount!;
+                                                      global.currentBill.root!.billHead!.head!.guestscount!;
                                                 },
                                                 icon: const Icon(Icons.delete_forever_outlined))
-                                                : const Text(' '),
-                                            IconButton(
-                                              icon: const Icon(Icons.arrow_forward_ios),
-                                              onPressed: () {
-                                                Navigator.push(
+                                            : const Text(' '),
+                                        IconButton(
+                                          icon: const Icon(Icons.arrow_forward_ios),
+                                          onPressed: () {
+                                            Navigator.push(
                                                     context,
                                                     MaterialPageRoute(
                                                         builder: (context) =>
                                                             GuestScreen(gN: index + commonGuest),
                                                         settings: const RouteSettings(name: "/guestscreen")))
-                                                    .then((value) =>
-                                                {
-                                                  if (global.currentBill.root!.billHead != null)
-                                                    {
-                                                      if (global.currentBill.root!.billHead!.head != null)
+                                                .then((value) => {
+                                                      if (global.currentBill.root!.billHead != null)
                                                         {
-                                                          if (guestHaveLine(0) && commonGuest == 1)
+                                                          if (global.currentBill.root!.billHead!.head != null)
                                                             {
-                                                              ref
-                                                                  .read(commonGuestsProvider.notifier)
-                                                                  .state = 0,
-                                                              //commonGuest = 0,
-                                                              items.add({'i': 0, 'gN': 'Общий'}),
-                                                            } else
-                                                            {
-                                                              if (!guestHaveLine(0) && commonGuest == 0){
-                                                                ref
-                                                                    .read(commonGuestsProvider.notifier)
-                                                                    .state = 1,
-                                                                //commonGuest = 1,
-                                                                items.removeWhere((element) =>
-                                                                element == {'i': 0, 'gN': 'Общий'}),
-                                                              }
-                                                            },
-                                                          ref
-                                                              .read(amountProvider.notifier)
-                                                              .state =
-                                                              global.currentBill.billSumm(),
-                                                          ref
-                                                              .read(numGuestsProvider.notifier)
-                                                              .state =
-                                                          global.currentBill.root!.billHead!.head!
-                                                              .guestscount!,
-
+                                                              if (guestHaveLine(0) && commonGuest == 1)
+                                                                {
+                                                                  ref
+                                                                      .read(commonGuestsProvider.notifier)
+                                                                      .state = 0,
+                                                                  //commonGuest = 0,
+                                                                  items.add({'i': 0, 'gN': 'Общий'}),
+                                                                }
+                                                              else
+                                                                {
+                                                                  if (!guestHaveLine(0) && commonGuest == 0)
+                                                                    {
+                                                                      ref
+                                                                          .read(commonGuestsProvider.notifier)
+                                                                          .state = 1,
+                                                                      //commonGuest = 1,
+                                                                      items.removeWhere((element) =>
+                                                                          element == {'i': 0, 'gN': 'Общий'}),
+                                                                    }
+                                                                },
+                                                              ref.read(amountProvider.notifier).state =
+                                                                  global.currentBill.billSumm(),
+                                                              ref.read(numGuestsProvider.notifier).state =
+                                                                  global.currentBill.root!.billHead!.head!
+                                                                      .guestscount!,
+                                                            }
                                                         }
-                                                    }
-                                                });
-                                              },
-                                            ),
-                                          ],
-                                        )),
-                                  ),
+                                                    });
+                                          },
+                                        ),
+                                      ],
+                                    )),
+                              ),
                             ),
                           ),
                         ),
@@ -317,10 +313,8 @@ class _CurrentBillState extends ConsumerState<CurrentBill> with WidgetsBindingOb
                           onPressed: () {
                             gNs++;
                             currentBillData.root!.billHead!.head!.guestscount = gNs;
-                            ref
-                                .read(numGuestsProvider.notifier)
-                                .state =
-                            currentBillData.root!.billHead!.head!.guestscount!;
+                            ref.read(numGuestsProvider.notifier).state =
+                                currentBillData.root!.billHead!.head!.guestscount!;
                             if (scrollController.hasClients) {
                               final position = scrollController.position.maxScrollExtent;
                               if (gNs > 3) {
@@ -402,8 +396,7 @@ class _CurrentBillState extends ConsumerState<CurrentBill> with WidgetsBindingOb
                                 Row(
                                   children: [
                                     Text(
-                                      '  Итого  ${NumberFormat.simpleCurrency(
-                                          locale: 'ru-RU', decimalDigits: 2).format(amount)} ',
+                                      '  Итого  ${NumberFormat.simpleCurrency(locale: 'ru-RU', decimalDigits: 2).format(amount)} ',
                                       style: const TextStyle(
                                         color: Colors.black,
                                         fontSize: 14,
@@ -493,12 +486,14 @@ class _CurrentBillState extends ConsumerState<CurrentBill> with WidgetsBindingOb
 
   bool billNeedUpdate(int billID) {
     bool result = false;
-    for (var element in global.currentBill.root!.billLines!.line!) {
-      if (((global.currentBill.root!.billHead!.head!.idcode != billID) ||
-          (element.idline! < 0) ||
-          (element.quantity! > element.markquantity!)) &&
-          !result) {
-        result = true;
+    if (global.currentBill.root!.billHead!.head!.idcode != billID) {
+      result = true;
+    } else {
+      for (var element in global.currentBill.root!.billLines!.line!) {
+        if ((element.idline! < 0) || (element.quantity! > element.markquantity!)) {
+          result = true;
+          break;
+        }
       }
     }
     return result;
@@ -522,8 +517,7 @@ Future<GetBill> loadCurrentBill(num billId) async {
   } else {
     var dio = Dio(BaseOptions(connectTimeout: const Duration(seconds: 15)));
     String request =
-        'http://${global.uri}/apim/Bill?Id_Bill=${billId.toString()}&Id_Waiter=${global.waiter.user!
-        .idcode}';
+        'http://${global.uri}/apim/Bill?Id_Bill=${billId.toString()}&Id_Waiter=${global.waiter.user!.idcode}';
     final response = await dio.get(request);
     debugPrint(response.data!.toString());
     if (response.statusCode == 200) {
